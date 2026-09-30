@@ -15,10 +15,22 @@ const SITE = {
   website: "nitishyadav.com",
   status: "Currently: Full Stack Developer @ Admeasy",
   profileImage: "/profile.jpg", // replace public/profile.jpg to update
-  links: {
-    resume: "/Nitish-Kumar-Yadav-Resume.pdf",
+};
+
+const LINKS = {
+  resume: "/Nitish-Kumar-Yadav-Resume.pdf",
+  social: {
     github: "", // e.g. "https://github.com/username"
     linkedin: "", // e.g. "https://linkedin.com/in/username"
+  },
+  projects: {
+    domnotify: { github: "", live: "" },
+    personax: { github: "", live: "" },
+    ecommerce: { github: "", live: "" },
+  },
+  certifications: {
+    hindustan: "",
+    rishiwar: "",
   },
 };
 
@@ -47,10 +59,19 @@ const PROJECTS: Project[] = [
     summary:
       "Built a premium domain monitoring SaaS using Next.js, React, Tailwind CSS, MongoDB, and JWT authentication with secure role-based access control.",
     details: [
-      "Developed real-time domain tracking features including expiry monitoring, SSL checks, registrar insights, watchlists, and admin management dashboards.",
-      "Optimized performance and scalability through modular architecture, protected APIs, middleware-based authentication, and responsive UI/UX inspired by modern platforms like Vercel and Linear.",
+      "modular architecture",
+      "protected APIs",
+      "middleware-based authentication",
+      "responsive UI/UX",
     ],
-    features: ["Architecture", "Authentication", "Domain monitoring", "Admin dashboard", "Responsive UI"],
+    features: [
+      "expiry monitoring",
+      "SSL checks",
+      "registrar insights",
+      "watchlists",
+      "admin management dashboards",
+    ],
+    cover: "/projects/domnotify-cover.png",
   },
   {
     id: "personax",
@@ -60,9 +81,18 @@ const PROJECTS: Project[] = [
     summary:
       "Built Persona X, an AI chatbot application with 5 interactive personas, integrating Gemini AI, React 19, Express, and MongoDB to handle real-time conversations and prompt analytics.",
     details: [
-      "Implemented admin dashboard, onboarding system, and prompt-tracking architecture, enabling complete monitoring of user interactions and persona usage across the platform.",
+      "Integrated Gemini API to power multi-persona chat with customized context.",
+      "Built an intuitive backend with Express to secure conversations and usage metrics.",
     ],
-    features: ["5 interactive personas", "AI integration", "Real-time conversations", "Prompt analytics", "Admin dashboard", "Onboarding system"],
+    features: [
+      "5 interactive personas",
+      "real-time conversations",
+      "prompt analytics",
+      "admin dashboard",
+      "onboarding system",
+      "prompt tracking",
+    ],
+    cover: "/projects/personax-cover.png",
   },
   {
     id: "ecommerce",
@@ -72,19 +102,61 @@ const PROJECTS: Project[] = [
     summary:
       "Implemented JWT-secured APIs, 30% faster UI rendering using React + Tailwind CSS, and integrated MongoDB Atlas for scalable data storage.",
     details: [
-      "Implemented RESTful APIs using Node.js, Express, and MongoDB with optimized frontend builds powered by Vite and Tailwind CSS.",
-      "Integrated user cart, wishlist, and admin dashboard functionalities.",
+      "Engineered secure back-end structure for cart and wishlist management.",
+      "Focused on responsive rendering and reliable payment integration concepts.",
     ],
-    features: ["Authentication", "REST APIs", "Cart", "Wishlist", "Admin dashboard", "MongoDB Atlas"],
+    features: [
+      "JWT authentication",
+      "REST APIs",
+      "cart",
+      "wishlist",
+      "admin dashboard",
+      "MongoDB Atlas",
+    ],
+    cover: "/projects/ecommerce-cover.png",
   },
 ];
 
 const ENGINEERING = [
-  { n: "01", t: "Full Stack", items: ["Production web applications", "SaaS platforms", "Admin dashboards", "Responsive UI/UX"] },
-  { n: "02", t: "Backend & Systems", items: ["Node.js", "Express.js", "REST APIs", "Authentication", "MongoDB", "Redis", "BullMQ", "Prisma ORM"] },
-  { n: "03", t: "Infrastructure", items: ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH"] },
-  { n: "04", t: "Mobile", items: ["React Native", "Capacitor", "Android Studio", "APK/AAB builds", "Hybrid applications"] },
-  { n: "05", t: "AI", items: ["Gemini API", "AI chatbot development", "Prompt engineering", "Python", "FastAPI"] },
+  {
+    n: "01",
+    t: "Full Stack",
+    items: [
+      "Production web applications",
+      "SaaS platforms",
+      "Admin dashboards",
+      "Responsive UI/UX",
+    ],
+  },
+  {
+    n: "02",
+    t: "Backend & Systems",
+    items: [
+      "Node.js",
+      "Express.js",
+      "REST APIs",
+      "Authentication",
+      "MongoDB",
+      "Redis",
+      "BullMQ",
+      "Prisma ORM",
+    ],
+  },
+  {
+    n: "03",
+    t: "Infrastructure",
+    items: ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH"],
+  },
+  {
+    n: "04",
+    t: "Mobile",
+    items: ["React Native", "Capacitor", "Android Studio", "APK/AAB builds", "Hybrid applications"],
+  },
+  {
+    n: "05",
+    t: "AI",
+    items: ["Gemini API", "AI chatbot development", "Prompt engineering", "Python", "FastAPI"],
+  },
 ];
 
 const EXPERIENCE = [
@@ -96,7 +168,7 @@ const EXPERIENCE = [
     points: [
       "Architected and developed scalable full-stack applications using React.js, Node.js, Express, and MongoDB with secure authentication and optimized APIs.",
       "Integrated Redis caching, BullMQ background jobs, and CI/CD pipelines using GitHub Actions to improve performance and deployment efficiency.",
-      "Delivered **50+** responsive UI/UX pages focused on clean design, scalability, and user experience.",
+      "Delivered **50+ responsive UI/UX pages** focused on clean design, scalability, and user experience.",
       "Independently developed and deployed mobile applications using Capacitor and Android Studio on the Google Play Store.",
     ],
   },
@@ -131,25 +203,99 @@ const HIGHLIGHTS = [
 ];
 
 const JOURNEY = [
-  { year: "2024", items: [["BCA", "IGNOU"], ["MERN Stack Development", "Oxford Software Institute"]] },
-  { year: "2025", items: [["Diploma completed", "Oxford Software Institute"], ["Web Developer Intern", "Hindustan Soft Education"], ["Full Stack Developer Intern", "Rishiwar Industries"]] },
-  { year: "2026", items: [["Rishiwar internship completed", "Feb 2026"], ["Joined Admeasy", "Full Stack Developer"], ["Full Stack Development + AI Engineering", "Now"]] },
+  {
+    year: "2024",
+    items: [
+      ["BCA", "IGNOU"],
+      ["MERN Stack Development", "Oxford Software Institute"],
+    ],
+  },
+  {
+    year: "2025",
+    items: [
+      ["Diploma completed", "Oxford Software Institute"],
+      ["Web Developer Intern", "Hindustan Soft Education"],
+      ["Full Stack Developer Intern", "Rishiwar Industries"],
+    ],
+  },
+  {
+    year: "2026",
+    items: [
+      ["Rishiwar internship completed", "Feb 2026"],
+      ["Joined Admeasy", "Full Stack Developer"],
+      ["Full Stack Development + AI Engineering", "Now"],
+    ],
+  },
 ];
 
 const CURRENTLY = [
   { t: "Building", items: ["Production full-stack applications and SaaS systems."] },
   { t: "Learning", items: ["Python", "Pandas", "NumPy", "Matplotlib"] },
   { t: "Exploring", items: ["PyTorch", "TensorFlow", "FastAPI", "AI Engineering"] },
-  { t: "Focusing on", items: ["System design", "Backend architecture", "Performance", "DSA", "AI-powered products"] },
+  {
+    t: "Focusing on",
+    items: ["System design", "Backend architecture", "Performance", "DSA", "AI-powered products"],
+  },
 ];
 
 const STACK: [string, string[]][] = [
-  ["Frontend", ["React.js", "Next.js", "JavaScript ES6+", "TypeScript", "Tailwind CSS", "MUI", "Bootstrap", "Framer Motion"]],
-  ["Backend", ["Node.js", "Express.js", "REST APIs", "JWT", "OAuth", "API Optimization", "Redis", "BullMQ", "Prisma ORM"]],
+  [
+    "Frontend",
+    [
+      "React.js",
+      "Next.js",
+      "JavaScript ES6+",
+      "TypeScript",
+      "Tailwind CSS",
+      "MUI",
+      "Bootstrap",
+      "Framer Motion",
+    ],
+  ],
+  [
+    "Backend",
+    [
+      "Node.js",
+      "Express.js",
+      "REST APIs",
+      "JWT",
+      "OAuth",
+      "API Optimization",
+      "Redis",
+      "BullMQ",
+      "Prisma ORM",
+    ],
+  ],
   ["Database", ["MongoDB", "SQL", "Database Design & Optimization"]],
-  ["Mobile", ["React Native", "Capacitor", "Android Studio", "Android APK/AAB Builds", "Hybrid App Development"]],
-  ["AI / Data", ["Python", "Pandas", "NumPy", "Matplotlib", "PyTorch", "TensorFlow", "FastAPI", "Gemini API", "AI Chatbot Development", "Prompt Engineering"]],
-  ["DevOps", ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH", "Postman"]],
+  [
+    "Mobile",
+    [
+      "React Native",
+      "Capacitor",
+      "Android Studio",
+      "Android APK/AAB Builds",
+      "Hybrid App Development",
+    ],
+  ],
+  [
+    "AI / Data",
+    [
+      "Python",
+      "Pandas",
+      "NumPy",
+      "Matplotlib",
+      "PyTorch",
+      "TensorFlow",
+      "FastAPI",
+      "Gemini API",
+      "AI Chatbot Development",
+      "Prompt Engineering",
+    ],
+  ],
+  [
+    "DevOps",
+    ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH", "Postman"],
+  ],
   ["IDE / Platforms", ["VS Code", "Antigravity", "Cursor", "Claude", "Codespaces"]],
 ];
 
@@ -201,14 +347,38 @@ export const Route = createFileRoute("/")({
 
 function Rich({ text }: { text: string }) {
   const parts = text.split(/\*\*(.+?)\*\*/g);
-  return <>{parts.map((p, i) => (i % 2 ? <strong key={i} className="metric">{p}</strong> : p))}</>;
+  return (
+    <>
+      {parts.map((p, i) =>
+        i % 2 ? (
+          <strong key={i} className="metric">
+            {p}
+          </strong>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  );
 }
 
-function Ext({ href, children, className = "text-link" }: { href: string; children: React.ReactNode; className?: string }) {
+function Ext({
+  href,
+  children,
+  className = "text-link",
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   if (!href) return null;
   const external = href.startsWith("http") || href.endsWith(".pdf");
   return (
-    <a href={href} className={className} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>
+    <a
+      href={href}
+      className={className}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
       {children}
       {external && <ArrowUpRight aria-hidden className="size-3.5" />}
     </a>
@@ -231,7 +401,10 @@ function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll(".reveal");
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add("is-visible"), io.unobserve(e.target))),
+      (entries) =>
+        entries.forEach(
+          (e) => e.isIntersecting && (e.target.classList.add("is-visible"), io.unobserve(e.target)),
+        ),
       { rootMargin: "0px 0px -8% 0px" },
     );
     els.forEach((el) => io.observe(el));
@@ -263,11 +436,18 @@ function ThemeToggle() {
     document.documentElement.classList.toggle("dark", d);
     try {
       localStorage.setItem("theme", d ? "dark" : "light");
-    } catch {}
+    } catch (e) {
+      // ignore
+    }
   };
   return (
     <div className="theme-pill" role="group" aria-label="Color theme">
-      <button type="button" aria-label="Light theme" aria-pressed={!dark} onClick={() => set(false)}>
+      <button
+        type="button"
+        aria-label="Light theme"
+        aria-pressed={!dark}
+        onClick={() => set(false)}
+      >
         <Sun className="size-3.5" />
       </button>
       <button type="button" aria-label="Dark theme" aria-pressed={dark} onClick={() => set(true)}>
@@ -284,7 +464,10 @@ function Portfolio() {
   return (
     <>
       <div className="scroll-rule" aria-hidden />
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-background focus:p-2">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-background focus:p-2"
+      >
         Skip to content
       </a>
       <SiteNav />
@@ -327,13 +510,26 @@ function SiteNav() {
             ))}
           </ul>
           <span className="h-4 w-px bg-border" aria-hidden />
-          <Ext href={SITE.links.resume} className="nav-link inline-flex items-center gap-1 !text-foreground">Resume</Ext>
-          <Ext href={SITE.links.github} className="nav-link inline-flex items-center gap-1">GitHub</Ext>
+          <Ext
+            href={LINKS.resume}
+            className="nav-link inline-flex items-center gap-1 !text-foreground"
+          >
+            Resume
+          </Ext>
+          <Ext href={LINKS.social.github} className="nav-link inline-flex items-center gap-1">
+            GitHub
+          </Ext>
           <ThemeToggle />
         </div>
         <div className="flex items-center gap-3 md:hidden">
           <ThemeToggle />
-          <button type="button" className="icon-btn" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen(!open)}>
+          <button
+            type="button"
+            className="icon-btn"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
@@ -343,15 +539,19 @@ function SiteNav() {
           <ul className="page-shell grid py-4">
             {NAV.map(([id, label]) => (
               <li key={id}>
-                <a href={`#${id}`} className="block border-b py-3 text-sm" onClick={() => setOpen(false)}>
+                <a
+                  href={`#${id}`}
+                  className="block border-b py-3 text-sm"
+                  onClick={() => setOpen(false)}
+                >
                   {label}
                 </a>
               </li>
             ))}
             <li className="flex gap-5 pt-4">
-              <Ext href={SITE.links.resume}>Resume</Ext>
-              <Ext href={SITE.links.github}>GitHub</Ext>
-              <Ext href={SITE.links.linkedin}>LinkedIn</Ext>
+              <Ext href={LINKS.resume}>Resume</Ext>
+              <Ext href={LINKS.social.github}>GitHub</Ext>
+              <Ext href={LINKS.social.linkedin}>LinkedIn</Ext>
             </li>
           </ul>
         </div>
@@ -365,9 +565,18 @@ function ProfileImage() {
   return (
     <div className="profile-frame">
       {failed || !SITE.profileImage ? (
-        <div className="grid h-full w-full place-items-center rounded-full bg-muted font-serif text-6xl text-muted-foreground">NY</div>
+        <div className="grid h-full w-full place-items-center rounded-full bg-muted font-serif text-6xl text-muted-foreground">
+          NY
+        </div>
       ) : (
-        <img src={SITE.profileImage} alt="Portrait of Nitish Kumar Yadav" width={400} height={400} className="h-full w-full object-cover" onError={() => setFailed(true)} />
+        <img
+          src={SITE.profileImage}
+          alt="Portrait of Nitish Kumar Yadav"
+          width={400}
+          height={400}
+          className="h-full w-full object-cover"
+          onError={() => setFailed(true)}
+        />
       )}
     </div>
   );
@@ -388,19 +597,31 @@ function Hero() {
             Building full-stack systems and AI-powered products.
           </p>
           <p className="hero-enter mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            I build production web applications, SaaS systems, APIs, mobile applications and AI-powered products.
+            I build production web applications, SaaS systems, APIs, mobile applications and
+            AI-powered products.
           </p>
-          <p className="hero-enter mt-6 font-mono text-xs text-muted-foreground">React · Next.js · Node.js · TypeScript · MongoDB · Python · AI</p>
+          <p className="hero-enter mt-6 font-mono text-xs text-muted-foreground">
+            React · Next.js · Node.js · TypeScript · MongoDB · Python · AI
+          </p>
           <div className="hero-enter mt-9 flex flex-wrap items-center gap-3">
             <a href="#work" className="btn-primary">
               View work <ArrowRight aria-hidden className="size-4" />
             </a>
-            <Ext href={SITE.links.resume} className="btn-secondary">Resume</Ext>
-            <Ext href={SITE.links.github} className="text-link ml-2">GitHub</Ext>
-            <Ext href={SITE.links.linkedin} className="text-link ml-2">LinkedIn</Ext>
+            <Ext href={LINKS.resume} className="btn-secondary">
+              Resume
+            </Ext>
+            <Ext href={LINKS.social.github} className="text-link ml-2">
+              GitHub
+            </Ext>
+            <Ext href={LINKS.social.linkedin} className="text-link ml-2">
+              LinkedIn
+            </Ext>
           </div>
         </div>
-        <aside className="profile-enter justify-self-start lg:justify-self-end" aria-label="Profile">
+        <aside
+          className="profile-enter justify-self-start lg:justify-self-end"
+          aria-label="Profile"
+        >
           <ProfileImage />
           <dl className="mt-6 grid gap-1 font-mono text-xs text-muted-foreground">
             <dt className="sr-only">Location</dt>
@@ -416,15 +637,24 @@ function Hero() {
 }
 
 function ProjectCover({ p }: { p: Project }) {
+  const [error, setError] = useState(false);
   return (
-    <div className="project-cover">
-      {p.cover ? (
-        <img src={p.cover} alt={`${p.name} screenshot`} loading="lazy" className="h-full w-full object-cover" />
+    <div className="project-cover bg-muted">
+      {p.cover && !error ? (
+        <img
+          src={p.cover}
+          alt={`${p.name} screenshot`}
+          loading="lazy"
+          className="h-full w-full object-cover"
+          onError={() => setError(true)}
+        />
       ) : (
         <div className="grid h-full place-items-center">
           <div className="text-center">
             <p className="font-serif text-4xl">{p.name}</p>
-            <p className="mt-2 font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">Screenshot coming</p>
+            <p className="mt-2 font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
+              Screenshot coming
+            </p>
           </div>
         </div>
       )}
@@ -448,7 +678,11 @@ function Work() {
               <div className="lg:col-span-5">
                 <p className="font-mono text-xs text-muted-foreground">
                   0{i + 1} · {p.category}
-                  {p.status && <span className="ml-2 rounded-full border px-2 py-0.5 text-accent-strong">{p.status}</span>}
+                  {p.status && (
+                    <span className="ml-2 rounded-full border px-2 py-0.5 text-accent-strong">
+                      {p.status}
+                    </span>
+                  )}
                 </p>
                 <h3 className="mt-3 text-3xl font-semibold tracking-tight">{p.name}</h3>
                 <p className="mt-4 leading-relaxed text-muted-foreground">{p.summary}</p>
@@ -458,17 +692,35 @@ function Work() {
                   ))}
                 </ul>
                 <div className="mt-6 flex flex-wrap items-center gap-5">
-                  <button type="button" className="text-link" aria-expanded={isOpen} aria-controls={`${p.id}-details`} onClick={() => setOpen(isOpen ? null : p.id)}>
+                  <button
+                    type="button"
+                    className="text-link"
+                    aria-expanded={isOpen}
+                    aria-controls={`${p.id}-details`}
+                    onClick={() => setOpen(isOpen ? null : p.id)}
+                  >
                     {isOpen ? "Hide details" : "Case study"}
-                    <ChevronDown aria-hidden className={`size-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      aria-hidden
+                      className={`size-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
                   </button>
-                  <Ext href={p.live ?? ""}>Live demo</Ext>
-                  <Ext href={p.github ?? ""}>GitHub</Ext>
-                  {p.private && <span className="font-mono text-xs text-muted-foreground">Private project</span>}
+                  <Ext href={LINKS.projects[p.id as keyof typeof LINKS.projects].live ?? ""}>
+                    Live demo
+                  </Ext>
+                  <Ext href={LINKS.projects[p.id as keyof typeof LINKS.projects].github ?? ""}>
+                    GitHub
+                  </Ext>
+                  {"private" in p && p.private && (
+                    <span className="font-mono text-xs text-muted-foreground">Private project</span>
+                  )}
                 </div>
               </div>
               {isOpen && (
-                <div id={`${p.id}-details`} className="case-panel grid gap-8 border-t pt-8 md:grid-cols-3 lg:col-span-12">
+                <div
+                  id={`${p.id}-details`}
+                  className="case-panel grid gap-8 border-t pt-8 md:grid-cols-3 lg:col-span-12"
+                >
                   <div>
                     <p className="section-kicker">Overview</p>
                     <p className="mt-3 text-sm leading-relaxed">{p.summary}</p>
@@ -485,7 +737,9 @@ function Work() {
                     <p className="section-kicker">Key functionality</p>
                     <ul className="mt-3 grid gap-2 text-sm">
                       {p.features.map((f) => (
-                        <li key={f} className="border-b pb-2">{f}</li>
+                        <li key={f} className="border-b pb-2">
+                          {f}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -539,7 +793,10 @@ function Experience() {
             </div>
             <ul className="grid gap-3 leading-relaxed lg:col-span-8">
               {x.points.map((pt) => (
-                <li key={pt} className="relative pl-5 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-muted-foreground">
+                <li
+                  key={pt}
+                  className="relative pl-5 before:absolute before:left-0 before:top-[0.7em] before:h-px before:w-2.5 before:bg-muted-foreground"
+                >
                   <Rich text={pt} />
                 </li>
               ))}
@@ -554,7 +811,9 @@ function Experience() {
 function Highlights() {
   return (
     <section aria-labelledby="hl" className="page-shell pb-8">
-      <h2 id="hl" className="section-kicker">Selected highlights</h2>
+      <h2 id="hl" className="section-kicker">
+        Selected highlights
+      </h2>
       <dl className="mt-6 grid grid-cols-2 gap-y-8 border-y py-8 lg:grid-cols-4">
         {HIGHLIGHTS.map((h) => (
           <div key={h.l} className="reveal pr-6">
@@ -618,7 +877,11 @@ function Currently() {
   return (
     <section id="currently" className="border-y bg-surface">
       <div className="page-shell section-space">
-        <SectionHead n="06" title="Currently" sub="What I'm building, learning and exploring right now — not all of it is production experience yet." />
+        <SectionHead
+          n="06"
+          title="Currently"
+          sub="What I'm building, learning and exploring right now — not all of it is production experience yet."
+        />
         <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {CURRENTLY.map((c) => (
             <div key={c.t} className="reveal border-t pt-5">
@@ -653,9 +916,11 @@ function AIEngineering() {
           <div>
             <h3 className="section-kicker">Python / AI stack</h3>
             <ul className="mt-4 grid gap-1.5">
-              {["Python", "Pandas", "NumPy", "Matplotlib", "PyTorch", "TensorFlow", "FastAPI"].map((t) => (
-                <li key={t}>{t}</li>
-              ))}
+              {["Python", "Pandas", "NumPy", "Matplotlib", "PyTorch", "TensorFlow", "FastAPI"].map(
+                (t) => (
+                  <li key={t}>{t}</li>
+                ),
+              )}
             </ul>
           </div>
         </div>
@@ -663,8 +928,19 @@ function AIEngineering() {
           <p className="section-kicker">Proof · Featured project</p>
           <h3 className="mt-4 font-serif text-4xl">PersonaX</h3>
           <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-            {["5 interactive AI personas", "Gemini AI", "React 19", "Express", "MongoDB", "Real-time conversations", "Prompt analytics", "Admin dashboard"].map((t) => (
-              <li key={t} className="border-b pb-2">{t}</li>
+            {[
+              "5 interactive AI personas",
+              "Gemini AI",
+              "React 19",
+              "Express",
+              "MongoDB",
+              "Real-time conversations",
+              "Prompt analytics",
+              "Admin dashboard",
+            ].map((t) => (
+              <li key={t} className="border-b pb-2">
+                {t}
+              </li>
             ))}
           </ul>
           <a href="#work" className="text-link mt-6">
@@ -685,7 +961,9 @@ function Stack() {
           <details key={group} className="skill-row reveal" open>
             <summary>
               <span className="section-kicker">{group}</span>
-              <span className="hidden text-sm text-muted-foreground sm:block">{items.length} tools</span>
+              <span className="hidden text-sm text-muted-foreground sm:block">
+                {items.length} tools
+              </span>
               <ChevronDown aria-hidden className="size-4 text-muted-foreground" />
             </summary>
             <ul className="flex flex-wrap gap-x-6 gap-y-2 pb-6 pl-[2.5rem]">
@@ -709,12 +987,18 @@ function About() {
         </div>
         <div className="reveal grid max-w-2xl gap-5 text-lg leading-relaxed lg:col-span-8">
           <p>
-            I'm Nitish, a full-stack developer based in New Delhi. I started with web development, moved into production backend systems and mobile applications, and am now going deeper into AI and machine learning.
+            I'm Nitish, a full-stack developer based in New Delhi. I started with web development,
+            moved into production backend systems and mobile applications, and am now going deeper
+            into AI and machine learning.
           </p>
           <p className="text-muted-foreground">
-            I enjoy understanding what happens underneath the interface — APIs, authentication, databases, background jobs, deployment and the systems connecting them.
+            I enjoy understanding what happens underneath the interface — APIs, authentication,
+            databases, background jobs, deployment and the systems connecting them.
           </p>
-          <p className="text-muted-foreground">I'm currently pursuing my BCA at IGNOU while building and shipping software alongside it.</p>
+          <p className="text-muted-foreground">
+            I'm currently pursuing my BCA at IGNOU while building and shipping software alongside
+            it.
+          </p>
         </div>
       </div>
     </section>
@@ -728,8 +1012,16 @@ function Education() {
       <div className="mt-12 grid gap-12 lg:grid-cols-2">
         <ul className="reveal">
           {[
-            ["Bachelor of Computer Applications (BCA)", "Indira Gandhi National Open University", "Aug 2024 – 2027"],
-            ["Diploma in MERN Stack Web Development", "Oxford Software Institute", "Aug 2024 – Aug 2025"],
+            [
+              "Bachelor of Computer Applications (BCA)",
+              "Indira Gandhi National Open University",
+              "Aug 2024 – 2027",
+            ],
+            [
+              "Diploma in MERN Stack Web Development",
+              "Oxford Software Institute",
+              "Aug 2024 – Aug 2025",
+            ],
           ].map(([d, s, p]) => (
             <li key={d} className="border-t py-5">
               <p className="font-semibold">{d}</p>
@@ -762,20 +1054,48 @@ function Contact() {
   return (
     <section id="contact" className="bg-ink text-ink-foreground">
       <div className="page-shell section-space">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-ink-muted">11 · Have a project, role, or problem in mind?</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-ink-muted">
+          11 · Have a project, role, or problem in mind?
+        </p>
         <h2 className="mt-6 font-serif text-[clamp(3.5rem,10vw,8rem)] leading-none">Let's talk.</h2>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <a href={`mailto:${SITE.email}`} className="btn-invert">
             Email me <ArrowRight aria-hidden className="size-4" />
           </a>
-          <Ext href={SITE.links.github} className="text-link !text-ink-foreground">GitHub</Ext>
-          <Ext href={SITE.links.linkedin} className="text-link !text-ink-foreground">LinkedIn</Ext>
-          <Ext href={SITE.links.resume} className="text-link !text-ink-foreground">Resume</Ext>
+          <Ext href={LINKS.social.github} className="text-link !text-ink-foreground">
+            GitHub
+          </Ext>
+          <Ext href={LINKS.social.linkedin} className="text-link !text-ink-foreground">
+            LinkedIn
+          </Ext>
+          <Ext href={LINKS.resume} className="text-link !text-ink-foreground">
+            Resume
+          </Ext>
         </div>
         <dl className="mt-16 grid gap-4 border-t border-ink-border pt-6 font-mono text-xs text-ink-muted sm:grid-cols-3">
-          <div><dt className="sr-only">Email</dt><dd><a href={`mailto:${SITE.email}`} className="hover:text-ink-foreground">{SITE.email}</a></dd></div>
-          <div><dt className="sr-only">Website</dt><dd>{SITE.website}</dd></div>
-          <div><dt className="sr-only">Phone</dt><dd><a href={`tel:${SITE.phone.replace(/\s/g, "")}`} className="hover:text-ink-foreground">{SITE.phone}</a></dd></div>
+          <div>
+            <dt className="sr-only">Email</dt>
+            <dd>
+              <a href={`mailto:${SITE.email}`} className="hover:text-ink-foreground">
+                {SITE.email}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt className="sr-only">Website</dt>
+            <dd>{SITE.website}</dd>
+          </div>
+          <div>
+            <dt className="sr-only">Phone</dt>
+            <dd>
+              <a
+                href={`tel:${SITE.phone.replace(/\s/g, "")}`}
+                className="hover:text-ink-foreground"
+              >
+                {SITE.phone}
+              </a>
+            </dd>
+          </div>
         </dl>
       </div>
     </section>
@@ -790,10 +1110,12 @@ function Footer() {
         <p className="mt-1 font-mono text-xs">{SITE.role}</p>
       </div>
       <div className="flex flex-wrap gap-5">
-        <Ext href={SITE.links.github}>GitHub</Ext>
-        <Ext href={SITE.links.linkedin}>LinkedIn</Ext>
-        <a href={`mailto:${SITE.email}`} className="text-link">Email</a>
-        <Ext href={SITE.links.resume}>Resume</Ext>
+        <Ext href={LINKS.social.github}>GitHub</Ext>
+        <Ext href={LINKS.social.linkedin}>LinkedIn</Ext>
+        <a href={`mailto:${SITE.email}`} className="text-link">
+          Email
+        </a>
+        <Ext href={LINKS.resume}>Resume</Ext>
       </div>
     </footer>
   );
