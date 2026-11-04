@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, ChevronDown, Menu, Moon, Sun, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-/* ------------------------------------------------------------------ */
-/* Site configuration — edit these values. Empty strings are hidden.   */
-/* ------------------------------------------------------------------ */
+import { Journey } from "../components/Journey";
+import { ProjectPreviewModal } from "../components/ProjectPreviewModal";
+import { PROJECTS, type Project } from "../lib/projects";
+
 const SITE = {
   name: "Nitish Kumar Yadav",
   short: "Nitish Yadav",
@@ -14,150 +15,92 @@ const SITE = {
   phone: "+91 96255 32559",
   website: "nitishyadav.com",
   status: "Currently: Full Stack Developer @ Admeasy",
-  profileImage: "/profile.jpg", // replace public/profile.jpg to update
+  profileImage: "/profile.jpg",
 };
 
 const LINKS = {
   resume: "/Nitish-Kumar-Yadav-Resume.pdf",
   social: {
-    github: "", // e.g. "https://github.com/username"
-    linkedin: "", // e.g. "https://linkedin.com/in/username"
+    github: "",
+    linkedin: "",
   },
   projects: {
-    domnotify: { github: "", live: "" },
-    personax: { github: "", live: "" },
-    ecommerce: { github: "", live: "" },
-  },
-  certifications: {
-    hindustan: "",
-    rishiwar: "",
+    admeasy: { github: "", live: "" },
+    "admeasy-ai": { github: "", live: "" },
+    mohinder: { github: "", live: "" },
   },
 };
 
-type Project = {
-  id: string;
-  name: string;
-  status?: string;
-  category: string;
-  tech: string[];
-  summary: string;
-  details: string[];
-  features: string[];
-  cover?: string; // e.g. "/projects/domnotify-cover.png"
-  live?: string;
-  github?: string;
-  private?: boolean;
-};
-
-const PROJECTS: Project[] = [
-  {
-    id: "domnotify",
-    name: "DomNotify",
-    status: "Ongoing",
-    category: "Domain Monitoring SaaS",
-    tech: ["Next.js", "React", "Tailwind CSS", "MongoDB", "JWT"],
-    summary:
-      "Built a premium domain monitoring SaaS using Next.js, React, Tailwind CSS, MongoDB, and JWT authentication with secure role-based access control.",
-    details: [
-      "modular architecture",
-      "protected APIs",
-      "middleware-based authentication",
-      "responsive UI/UX",
-    ],
-    features: [
-      "expiry monitoring",
-      "SSL checks",
-      "registrar insights",
-      "watchlists",
-      "admin management dashboards",
-    ],
-    cover: "/projects/domnotify-cover.png",
-  },
-  {
-    id: "personax",
-    name: "PersonaX",
-    category: "AI Chatbot",
-    tech: ["Gemini AI", "React 19", "Express", "MongoDB"],
-    summary:
-      "Built Persona X, an AI chatbot application with 5 interactive personas, integrating Gemini AI, React 19, Express, and MongoDB to handle real-time conversations and prompt analytics.",
-    details: [
-      "Integrated Gemini API to power multi-persona chat with customized context.",
-      "Built an intuitive backend with Express to secure conversations and usage metrics.",
-    ],
-    features: [
-      "5 interactive personas",
-      "real-time conversations",
-      "prompt analytics",
-      "admin dashboard",
-      "onboarding system",
-      "prompt tracking",
-    ],
-    cover: "/projects/personax-cover.png",
-  },
-  {
-    id: "ecommerce",
-    name: "E-Commerce App",
-    category: "Full-stack commerce",
-    tech: ["React", "Tailwind CSS", "Node.js", "Express", "MongoDB", "Vite"],
-    summary:
-      "Implemented JWT-secured APIs, 30% faster UI rendering using React + Tailwind CSS, and integrated MongoDB Atlas for scalable data storage.",
-    details: [
-      "Engineered secure back-end structure for cart and wishlist management.",
-      "Focused on responsive rendering and reliable payment integration concepts.",
-    ],
-    features: [
-      "JWT authentication",
-      "REST APIs",
-      "cart",
-      "wishlist",
-      "admin dashboard",
-      "MongoDB Atlas",
-    ],
-    cover: "/projects/ecommerce-cover.png",
-  },
-];
+const FEATURED_PROJECTS = PROJECTS.filter((project) => project.category === "selected").slice(0, 3);
+const HOMEPAGE_NAV = [["top", "Home"], ["work", "Work"], ["engineering", "Engineering"], ["experience", "Experience"], ["journey", "Journey"], ["about", "About"]] as const;
 
 const ENGINEERING = [
   {
     n: "01",
-    t: "Full Stack",
-    items: [
-      "Production web applications",
-      "SaaS platforms",
-      "Admin dashboards",
-      "Responsive UI/UX",
-    ],
+    title: "Full Stack Development",
+    summary:
+      "Production-grade web applications, SaaS products, and user-facing systems built for speed, clarity, and real-world use.",
+    items: ["React", "Next.js", "TypeScript", "Node.js", "Express", "REST APIs"],
   },
   {
     n: "02",
-    t: "Backend & Systems",
+    title: "Backend & Architecture",
+    summary:
+      "Designing secure, maintainable systems with the right trade-offs between performance, scale, and developer velocity.",
     items: [
-      "Node.js",
-      "Express.js",
-      "REST APIs",
-      "Authentication",
+      "API design",
+      "Authentication & authorization",
       "MongoDB",
+      "SQL",
       "Redis",
       "BullMQ",
-      "Prisma ORM",
+      "Database design",
     ],
   },
   {
     n: "03",
-    t: "Infrastructure",
-    items: ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH"],
+    title: "AI Engineering",
+    summary:
+      "Building AI-powered experiences and integrations that turn product ideas into usable workflows and intelligent features.",
+    items: [
+      "Python",
+      "FastAPI",
+      "PyTorch",
+      "TensorFlow",
+      "Gemini API",
+      "AI integrations",
+      "AI-powered products",
+    ],
   },
   {
     n: "04",
-    t: "Mobile",
-    items: ["React Native", "Capacitor", "Android Studio", "APK/AAB builds", "Hybrid applications"],
+    title: "Infrastructure & Performance",
+    summary:
+      "Optimizing deployments, caching flows, background jobs, and application performance across the full stack.",
+    items: [
+      "Docker",
+      "CI/CD",
+      "GitHub Actions",
+      "Caching",
+      "Background jobs",
+      "Deployment",
+      "Performance optimization",
+    ],
   },
   {
     n: "05",
-    t: "AI",
-    items: ["Gemini API", "AI chatbot development", "Prompt engineering", "Python", "FastAPI"],
+    title: "Engineering Focus",
+    summary:
+      "I care most about backend architecture, scalable system design, performance engineering, and shipping reliable software.",
+    items: [
+      "System Design",
+      "Backend Architecture",
+      "Performance Engineering",
+      "Data Structures & Algorithms",
+      "AI-powered Products",
+    ],
   },
-];
+] as const;
 
 const EXPERIENCE = [
   {
@@ -195,118 +138,6 @@ const EXPERIENCE = [
   },
 ];
 
-const HIGHLIGHTS = [
-  { v: "50+", l: "Responsive UI/UX pages delivered" },
-  { v: "2", l: "Mobile applications developed at Rishiwar" },
-  { v: "3", l: "Professional roles / internships listed" },
-  { v: "1", l: "Current Full Stack Developer role at Admeasy" },
-];
-
-const JOURNEY = [
-  {
-    year: "2024",
-    items: [
-      ["BCA", "IGNOU"],
-      ["MERN Stack Development", "Oxford Software Institute"],
-    ],
-  },
-  {
-    year: "2025",
-    items: [
-      ["Diploma completed", "Oxford Software Institute"],
-      ["Web Developer Intern", "Hindustan Soft Education"],
-      ["Full Stack Developer Intern", "Rishiwar Industries"],
-    ],
-  },
-  {
-    year: "2026",
-    items: [
-      ["Rishiwar internship completed", "Feb 2026"],
-      ["Joined Admeasy", "Full Stack Developer"],
-      ["Full Stack Development + AI Engineering", "Now"],
-    ],
-  },
-];
-
-const CURRENTLY = [
-  { t: "Building", items: ["Production full-stack applications and SaaS systems."] },
-  { t: "Learning", items: ["Python", "Pandas", "NumPy", "Matplotlib"] },
-  { t: "Exploring", items: ["PyTorch", "TensorFlow", "FastAPI", "AI Engineering"] },
-  {
-    t: "Focusing on",
-    items: ["System design", "Backend architecture", "Performance", "DSA", "AI-powered products"],
-  },
-];
-
-const STACK: [string, string[]][] = [
-  [
-    "Frontend",
-    [
-      "React.js",
-      "Next.js",
-      "JavaScript ES6+",
-      "TypeScript",
-      "Tailwind CSS",
-      "MUI",
-      "Bootstrap",
-      "Framer Motion",
-    ],
-  ],
-  [
-    "Backend",
-    [
-      "Node.js",
-      "Express.js",
-      "REST APIs",
-      "JWT",
-      "OAuth",
-      "API Optimization",
-      "Redis",
-      "BullMQ",
-      "Prisma ORM",
-    ],
-  ],
-  ["Database", ["MongoDB", "SQL", "Database Design & Optimization"]],
-  [
-    "Mobile",
-    [
-      "React Native",
-      "Capacitor",
-      "Android Studio",
-      "Android APK/AAB Builds",
-      "Hybrid App Development",
-    ],
-  ],
-  [
-    "AI / Data",
-    [
-      "Python",
-      "Pandas",
-      "NumPy",
-      "Matplotlib",
-      "PyTorch",
-      "TensorFlow",
-      "FastAPI",
-      "Gemini API",
-      "AI Chatbot Development",
-      "Prompt Engineering",
-    ],
-  ],
-  [
-    "DevOps",
-    ["Docker", "Git", "GitHub", "GitHub Actions", "CI/CD", "SSH", "Remote SSH", "Postman"],
-  ],
-  ["IDE / Platforms", ["VS Code", "Antigravity", "Cursor", "Claude", "Codespaces"]],
-];
-
-const NAV = [
-  ["work", "Work"],
-  ["experience", "Experience"],
-  ["journey", "Journey"],
-  ["stack", "Stack"],
-  ["about", "About"],
-] as const;
-
 const TITLE = "Nitish Kumar Yadav — Full Stack Developer & AI Engineer";
 const DESC =
   "Full Stack Developer and AI Engineer building scalable web applications, SaaS platforms, APIs, mobile applications and AI-powered products.";
@@ -343,8 +174,6 @@ export const Route = createFileRoute("/")({
   component: Portfolio,
 });
 
-/* ------------------------------ helpers ------------------------------ */
-
 function Rich({ text }: { text: string }) {
   const parts = text.split(/\*\*(.+?)\*\*/g);
   return (
@@ -362,23 +191,11 @@ function Rich({ text }: { text: string }) {
   );
 }
 
-function Ext({
-  href,
-  children,
-  className = "text-link",
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
+function Ext({ href, children, className = "text-link" }: { href: string; children: React.ReactNode; className?: string }) {
   if (!href) return null;
   const external = href.startsWith("http") || href.endsWith(".pdf");
   return (
-    <a
-      href={href}
-      className={className}
-      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-    >
+    <a href={href} className={className} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>
       {children}
       {external && <ArrowUpRight aria-hidden className="size-3.5" />}
     </a>
@@ -412,19 +229,49 @@ function useReveal() {
   }, []);
 }
 
+function scrollToSection(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navHeight = 72;
+  const top = el.getBoundingClientRect().top + window.scrollY - navHeight;
+  window.scrollTo({ top, behavior: "smooth" });
+}
+
 function useActiveSection() {
   const [active, setActive] = useState("");
+
   useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
-      { rootMargin: "-45% 0px -50% 0px" },
+    const ids = ["top", "work", "engineering", "experience", "journey", "about"] as const;
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) {
+          setActive("top");
+          return;
+        }
+
+        setActive(visible.target.id);
+      },
+      {
+        root: null,
+        threshold: [0.1, 0.2, 0.35, 0.55, 0.75],
+        rootMargin: "-12% 0px -35% 0px",
+      },
     );
-    NAV.forEach(([id]) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
+
   return active;
 }
 
@@ -436,18 +283,13 @@ function ThemeToggle() {
     document.documentElement.classList.toggle("dark", d);
     try {
       localStorage.setItem("theme", d ? "dark" : "light");
-    } catch (e) {
+    } catch {
       // ignore
     }
   };
   return (
     <div className="theme-pill" role="group" aria-label="Color theme">
-      <button
-        type="button"
-        aria-label="Light theme"
-        aria-pressed={!dark}
-        onClick={() => set(false)}
-      >
+      <button type="button" aria-label="Light theme" aria-pressed={!dark} onClick={() => set(false)}>
         <Sun className="size-3.5" />
       </button>
       <button type="button" aria-label="Dark theme" aria-pressed={dark} onClick={() => set(true)}>
@@ -457,16 +299,15 @@ function ThemeToggle() {
   );
 }
 
-/* ------------------------------- page -------------------------------- */
-
 function Portfolio() {
   useReveal();
+
   return (
     <>
       <div className="scroll-rule" aria-hidden />
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-background focus:p-2"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200 focus:bg-background focus:p-2"
       >
         Skip to content
       </a>
@@ -476,14 +317,8 @@ function Portfolio() {
         <Work />
         <Engineering />
         <Experience />
-        <Highlights />
         <Journey />
-        <Currently />
-        <AIEngineering />
-        <Stack />
         <About />
-        <Education />
-        <Contact />
       </main>
       <Footer />
     </>
@@ -493,34 +328,65 @@ function Portfolio() {
 function SiteNav() {
   const active = useActiveSection();
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
+  const isWork = pathname === "/work";
+
+  const navItems = [
+    { id: "top", label: "Home" },
+    { id: "work", label: "Work" },
+    { id: "engineering", label: "Engineering" },
+    { id: "experience", label: "Experience" },
+    { id: "journey", label: "Journey" },
+    { id: "about", label: "About" },
+  ];
+
   return (
     <header className="site-nav">
-      <nav className="page-shell flex h-16 items-center justify-between gap-6" aria-label="Primary">
-        <a href="#top" className="wordmark" onClick={() => setOpen(false)}>
+      <nav className="page-shell flex h-16 items-center justify-between gap-6" aria-label="Primary navigation">
+        <Link to="/" className="wordmark" onClick={() => setOpen(false)}>
           {SITE.short}
-        </a>
-        <div className="hidden items-center gap-7 md:flex">
-          <ul className="flex items-center gap-6">
-            {NAV.map(([id, label]) => (
-              <li key={id}>
-                <a href={`#${id}`} className={`nav-link ${active === id ? "active" : ""}`}>
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        </Link>
+
+        <div className="hidden items-center gap-5 md:flex">
+          {navItems.map(({ id, label }) => {
+            const isActive = isWork ? id === "work" : isHome ? id === "top" : active === id;
+
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`nav-link ${isActive ? "active" : ""}`}
+                onClick={() => {
+                  if (id === "work") {
+                    window.history.pushState({}, "", "/work");
+                    return;
+                  }
+
+                  if (pathname !== "/") {
+                    window.history.pushState({}, "", "/");
+                  }
+
+                  const target = document.getElementById(id === "top" ? "top" : id);
+                  if (target) {
+                    const navHeight = 72;
+                    const nextTop = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                    window.scrollTo({ top: nextTop, behavior: "smooth" });
+                  }
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+
           <span className="h-4 w-px bg-border" aria-hidden />
-          <Ext
-            href={LINKS.resume}
-            className="nav-link inline-flex items-center gap-1 !text-foreground"
-          >
+          <Ext href={LINKS.resume} className="nav-link inline-flex items-center gap-1 text-foreground!">
             Resume
-          </Ext>
-          <Ext href={LINKS.social.github} className="nav-link inline-flex items-center gap-1">
-            GitHub
           </Ext>
           <ThemeToggle />
         </div>
+
         <div className="flex items-center gap-3 md:hidden">
           <ThemeToggle />
           <button
@@ -534,24 +400,36 @@ function SiteNav() {
           </button>
         </div>
       </nav>
+
       {open && (
         <div className="border-t bg-background md:hidden">
           <ul className="page-shell grid py-4">
-            {NAV.map(([id, label]) => (
+            {navItems.map(({ id, label }) => (
               <li key={id}>
-                <a
-                  href={`#${id}`}
-                  className="block border-b py-3 text-sm"
-                  onClick={() => setOpen(false)}
+                <button
+                  type="button"
+                  className="block w-full border-b py-3 text-left text-sm"
+                  onClick={() => {
+                    setOpen(false);
+                    if (id === "work") {
+                      window.history.pushState({}, "", "/work");
+                      return;
+                    }
+                    window.history.pushState({}, "", "/");
+                    const target = document.getElementById(id === "top" ? "top" : id);
+                    if (target) {
+                      const navHeight = 72;
+                      const nextTop = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                      window.scrollTo({ top: nextTop, behavior: "smooth" });
+                    }
+                  }}
                 >
                   {label}
-                </a>
+                </button>
               </li>
             ))}
             <li className="flex gap-5 pt-4">
               <Ext href={LINKS.resume}>Resume</Ext>
-              <Ext href={LINKS.social.github}>GitHub</Ext>
-              <Ext href={LINKS.social.linkedin}>LinkedIn</Ext>
             </li>
           </ul>
         </div>
@@ -604,9 +482,9 @@ function Hero() {
             React · Next.js · Node.js · TypeScript · MongoDB · Python · AI
           </p>
           <div className="hero-enter mt-9 flex flex-wrap items-center gap-3">
-            <a href="#work" className="btn-primary">
-              View work <ArrowRight aria-hidden className="size-4" />
-            </a>
+            <Link to="/work" className="btn-secondary inline-flex items-center gap-2">
+              Explore All Projects <ArrowRight aria-hidden className="size-4" />
+            </Link>
             <Ext href={LINKS.resume} className="btn-secondary">
               Resume
             </Ext>
@@ -618,10 +496,7 @@ function Hero() {
             </Ext>
           </div>
         </div>
-        <aside
-          className="profile-enter justify-self-start lg:justify-self-end"
-          aria-label="Profile"
-        >
+        <aside className="profile-enter justify-self-start lg:justify-self-end" aria-label="Profile">
           <ProfileImage />
           <dl className="mt-6 grid gap-1 font-mono text-xs text-muted-foreground">
             <dt className="sr-only">Location</dt>
@@ -636,19 +511,103 @@ function Hero() {
   );
 }
 
+function ProjectPreview({ p }: { p: Project }) {
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const node = viewportRef.current;
+    if (!node) return;
+    const update = () => {
+      setHasScrolled(node.scrollTop > 12 || node.scrollHeight > node.clientHeight + 12);
+    };
+    update();
+    const handleWheel = (event: WheelEvent) => {
+      if (node.scrollHeight <= node.clientHeight) return;
+      const isAtTop = node.scrollTop <= 0 && event.deltaY < 0;
+      const isAtBottom = node.scrollTop + node.clientHeight >= node.scrollHeight - 1 && event.deltaY > 0;
+      if (isAtTop || isAtBottom) return;
+      event.preventDefault();
+      node.scrollTop += event.deltaY;
+    };
+    const handleTouchMove = (event: TouchEvent) => {
+      if (node.scrollHeight <= node.clientHeight) return;
+      const delta = event.touches[0]?.clientY ?? 0;
+      if (Math.abs(delta) > 0) {
+        event.preventDefault();
+      }
+    };
+    node.addEventListener("scroll", update, { passive: true });
+    node.addEventListener("wheel", handleWheel, { passive: false });
+    node.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("resize", update);
+    return () => {
+      node.removeEventListener("scroll", update);
+      node.removeEventListener("wheel", handleWheel);
+      node.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("resize", update);
+    };
+  }, [p.id]);
+
+  return (
+    <div className="project-preview" aria-label={`${p.name} project preview`}>
+      <div className="project-preview__window">
+        <div className="project-preview__header" aria-hidden="true">
+          <div className="project-preview__dots">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="project-preview__url">{p.browserDomain}</div>
+        </div>
+        <div
+          ref={viewportRef}
+          className="project-preview__viewport"
+          aria-label={`${p.name} screenshot preview`}
+          tabIndex={0}
+          onWheel={(event) => {
+            const node = event.currentTarget;
+            if (node.scrollHeight <= node.clientHeight) return;
+            const isAtTop = node.scrollTop <= 0 && event.deltaY < 0;
+            const isAtBottom =
+              node.scrollTop + node.clientHeight >= node.scrollHeight - 1 && event.deltaY > 0;
+            if (isAtTop || isAtBottom) return;
+            event.preventDefault();
+            node.scrollTop += event.deltaY;
+          }}
+        >
+          {p.cover ? (
+            <img
+              src={p.cover}
+              alt={`${p.name} long-form project screenshot`}
+              className="project-preview__image"
+              loading="lazy"
+              onError={() => setHasScrolled(true)}
+            />
+          ) : (
+            <div className="project-preview__fallback">
+              <p>{p.name}</p>
+            </div>
+          )}
+        </div>
+        {!hasScrolled && (
+          <div className="project-preview__indicator" aria-hidden="true">
+            Scroll to explore
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProjectCover({ p }: { p: Project }) {
   const [error, setError] = useState(false);
-  return (
-    <div className="project-cover bg-muted">
-      {p.cover && !error ? (
-        <img
-          src={p.cover}
-          alt={`${p.name} screenshot`}
-          loading="lazy"
-          className="h-full w-full object-cover"
-          onError={() => setError(true)}
-        />
-      ) : (
+  const [isExpanded, setIsExpanded] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  if (!p.cover || error) {
+    return (
+      <div className="project-cover bg-muted">
         <div className="grid h-full place-items-center">
           <div className="text-center">
             <p className="font-serif text-4xl">{p.name}</p>
@@ -657,18 +616,66 @@ function ProjectCover({ p }: { p: Project }) {
             </p>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="project-preview project-preview--trigger"
+        aria-label={`Open ${p.name} project preview`}
+        onClick={() => setIsExpanded(true)}
+      >
+        <span className="project-preview__window">
+          <span className="project-preview__header" aria-hidden="true">
+            <span className="project-preview__dots">
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className="project-preview__url">{p.browserDomain}</span>
+          </span>
+          <span className="project-preview__viewport" aria-hidden="true">
+            <img
+              src={p.cover}
+              alt={`${p.name} long-form project screenshot`}
+              className="project-preview__image"
+              loading="lazy"
+              onError={() => setError(true)}
+            />
+          </span>
+          <span className="project-preview__indicator" aria-hidden="true">
+            Click to explore
+          </span>
+        </span>
+      </button>
+
+      <ProjectPreviewModal
+        isOpen={isExpanded}
+        onClose={() => {
+          setIsExpanded(false);
+          triggerRef.current?.focus();
+        }}
+        projectName={p.name}
+        projectCategory={p.category}
+        projectUrl={p.browserDomain}
+        imageSrc={p.cover}
+      />
+    </>
   );
 }
 
 function Work() {
   const [open, setOpen] = useState<string | null>(null);
+
   return (
     <section id="work" className="page-shell section-space">
-      <SectionHead n="02" title="Selected Work" sub="Things I've built." />
+      <SectionHead n="02" title="Selected Work" sub="Products, experiments and engineering projects I've built." />
       <div className="mt-14 grid gap-20">
-        {PROJECTS.map((p, i) => {
+        {FEATURED_PROJECTS.map((p, i) => {
           const isOpen = open === p.id;
           return (
             <article key={p.id} className="project reveal grid gap-8 lg:grid-cols-12">
@@ -705,15 +712,8 @@ function Work() {
                       className={`size-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
                     />
                   </button>
-                  <Ext href={LINKS.projects[p.id as keyof typeof LINKS.projects].live ?? ""}>
-                    Live demo
-                  </Ext>
-                  <Ext href={LINKS.projects[p.id as keyof typeof LINKS.projects].github ?? ""}>
-                    GitHub
-                  </Ext>
-                  {"private" in p && p.private && (
-                    <span className="font-mono text-xs text-muted-foreground">Private project</span>
-                  )}
+                  <Ext href={p.live ?? ""}>Live demo</Ext>
+                  <Ext href={p.github ?? ""}>GitHub</Ext>
                 </div>
               </div>
               {isOpen && (
@@ -749,6 +749,11 @@ function Work() {
           );
         })}
       </div>
+      <div className="mt-10">
+        <Link to="/work" className="text-link">
+          View all work <ArrowRight aria-hidden className="size-3.5" />
+        </Link>
+      </div>
     </section>
   );
 }
@@ -762,7 +767,8 @@ function Engineering() {
           {ENGINEERING.map((e) => (
             <div key={e.n} className="reveal bg-background p-6">
               <p className="font-mono text-xs text-muted-foreground">{e.n}</p>
-              <h3 className="mt-6 text-lg font-semibold">{e.t}</h3>
+              <h3 className="mt-6 text-lg font-semibold">{e.title}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">{e.summary}</p>
               <ul className="mt-4 grid gap-1.5 text-sm text-muted-foreground">
                 {e.items.map((it) => (
                   <li key={it}>{it}</li>
@@ -808,176 +814,6 @@ function Experience() {
   );
 }
 
-function Highlights() {
-  return (
-    <section aria-labelledby="hl" className="page-shell pb-8">
-      <h2 id="hl" className="section-kicker">
-        Selected highlights
-      </h2>
-      <dl className="mt-6 grid grid-cols-2 gap-y-8 border-y py-8 lg:grid-cols-4">
-        {HIGHLIGHTS.map((h) => (
-          <div key={h.l} className="reveal pr-6">
-            <dt className="order-2 mt-2 text-sm text-muted-foreground">{h.l}</dt>
-            <dd className="font-serif text-5xl">{h.v}</dd>
-          </div>
-        ))}
-      </dl>
-    </section>
-  );
-}
-
-function Journey() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let raf = 0;
-    const update = () => {
-      const r = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const p = Math.min(1, Math.max(0, (vh * 0.6 - r.top) / r.height));
-      el.style.setProperty("--progress", String(p));
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return (
-    <section id="journey" className="page-shell section-space">
-      <SectionHead n="05" title="My Journey" />
-      <div ref={ref} className="journey mt-16">
-        <span className="journey-track" aria-hidden />
-        <span className="journey-fill" aria-hidden />
-        {JOURNEY.map((y) => (
-          <div key={y.year} className="journey-year">
-            <p className="journey-label reveal">{y.year}</p>
-            <ul className="grid gap-5">
-              {y.items.map(([t, s], i) => (
-                <li key={t} className={`journey-branch reveal ${i % 2 ? "is-right" : "is-left"}`}>
-                  <span className="journey-dot" aria-hidden />
-                  <div className="journey-card">
-                    <p className="font-semibold">{t}</p>
-                    <p className="text-sm text-muted-foreground">{s}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Currently() {
-  return (
-    <section id="currently" className="border-y bg-surface">
-      <div className="page-shell section-space">
-        <SectionHead
-          n="06"
-          title="Currently"
-          sub="What I'm building, learning and exploring right now — not all of it is production experience yet."
-        />
-        <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {CURRENTLY.map((c) => (
-            <div key={c.t} className="reveal border-t pt-5">
-              <h3 className="section-kicker">{c.t}</h3>
-              <ul className="mt-4 grid gap-1.5">
-                {c.items.map((i) => (
-                  <li key={i}>{i}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AIEngineering() {
-  return (
-    <section id="ai" className="page-shell section-space">
-      <SectionHead n="07" title="AI Engineering" />
-      <div className="mt-14 grid gap-12 lg:grid-cols-12">
-        <div className="reveal grid gap-10 sm:grid-cols-2 lg:col-span-6">
-          <div>
-            <h3 className="section-kicker">AI work</h3>
-            <ul className="mt-4 grid gap-1.5">
-              <li>Gemini API</li>
-              <li>AI Chatbot Development</li>
-              <li>Prompt Engineering</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="section-kicker">Python / AI stack</h3>
-            <ul className="mt-4 grid gap-1.5">
-              {["Python", "Pandas", "NumPy", "Matplotlib", "PyTorch", "TensorFlow", "FastAPI"].map(
-                (t) => (
-                  <li key={t}>{t}</li>
-                ),
-              )}
-            </ul>
-          </div>
-        </div>
-        <aside className="reveal border p-8 lg:col-span-6">
-          <p className="section-kicker">Proof · Featured project</p>
-          <h3 className="mt-4 font-serif text-4xl">PersonaX</h3>
-          <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-            {[
-              "5 interactive AI personas",
-              "Gemini AI",
-              "React 19",
-              "Express",
-              "MongoDB",
-              "Real-time conversations",
-              "Prompt analytics",
-              "Admin dashboard",
-            ].map((t) => (
-              <li key={t} className="border-b pb-2">
-                {t}
-              </li>
-            ))}
-          </ul>
-          <a href="#work" className="text-link mt-6">
-            View project <ArrowUpRight aria-hidden className="size-3.5" />
-          </a>
-        </aside>
-      </div>
-    </section>
-  );
-}
-
-function Stack() {
-  return (
-    <section id="stack" className="page-shell section-space pt-0">
-      <SectionHead n="08" title="Stack" />
-      <div className="mt-10">
-        {STACK.map(([group, items]) => (
-          <details key={group} className="skill-row reveal" open>
-            <summary>
-              <span className="section-kicker">{group}</span>
-              <span className="hidden text-sm text-muted-foreground sm:block">
-                {items.length} tools
-              </span>
-              <ChevronDown aria-hidden className="size-4 text-muted-foreground" />
-            </summary>
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 pb-6 pl-[2.5rem]">
-              {items.map((i) => (
-                <li key={i}>{i}</li>
-              ))}
-            </ul>
-          </details>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function About() {
   return (
     <section id="about" className="border-t bg-surface">
@@ -1000,103 +836,6 @@ function About() {
             it.
           </p>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function Education() {
-  return (
-    <section id="education" className="page-shell section-space">
-      <SectionHead n="10" title="Education" />
-      <div className="mt-12 grid gap-12 lg:grid-cols-2">
-        <ul className="reveal">
-          {[
-            [
-              "Bachelor of Computer Applications (BCA)",
-              "Indira Gandhi National Open University",
-              "Aug 2024 – 2027",
-            ],
-            [
-              "Diploma in MERN Stack Web Development",
-              "Oxford Software Institute",
-              "Aug 2024 – Aug 2025",
-            ],
-          ].map(([d, s, p]) => (
-            <li key={d} className="border-t py-5">
-              <p className="font-semibold">{d}</p>
-              <p className="text-sm text-muted-foreground">{s} · New Delhi, India</p>
-              <p className="mt-1 font-mono text-xs text-muted-foreground">{p}</p>
-            </li>
-          ))}
-        </ul>
-        <div className="reveal">
-          <h3 className="section-kicker">Certifications</h3>
-          <ul className="mt-4">
-            {[
-              ["Web Developer Intern", "Hindustan Soft Education Ltd.", "Oct 2025"],
-              ["Full Stack Developer Intern", "Rishiwar Industries Pvt. Ltd.", "Feb 2026"],
-            ].map(([t, o, d]) => (
-              <li key={t} className="border-t py-5">
-                <p className="font-semibold">{t}</p>
-                <p className="text-sm text-muted-foreground">{o}</p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground">{d}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Contact() {
-  return (
-    <section id="contact" className="bg-ink text-ink-foreground">
-      <div className="page-shell section-space">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-ink-muted">
-          11 · Have a project, role, or problem in mind?
-        </p>
-        <h2 className="mt-6 font-serif text-[clamp(3.5rem,10vw,8rem)] leading-none">Let's talk.</h2>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <a href={`mailto:${SITE.email}`} className="btn-invert">
-            Email me <ArrowRight aria-hidden className="size-4" />
-          </a>
-          <Ext href={LINKS.social.github} className="text-link !text-ink-foreground">
-            GitHub
-          </Ext>
-          <Ext href={LINKS.social.linkedin} className="text-link !text-ink-foreground">
-            LinkedIn
-          </Ext>
-          <Ext href={LINKS.resume} className="text-link !text-ink-foreground">
-            Resume
-          </Ext>
-        </div>
-        <dl className="mt-16 grid gap-4 border-t border-ink-border pt-6 font-mono text-xs text-ink-muted sm:grid-cols-3">
-          <div>
-            <dt className="sr-only">Email</dt>
-            <dd>
-              <a href={`mailto:${SITE.email}`} className="hover:text-ink-foreground">
-                {SITE.email}
-              </a>
-            </dd>
-          </div>
-          <div>
-            <dt className="sr-only">Website</dt>
-            <dd>{SITE.website}</dd>
-          </div>
-          <div>
-            <dt className="sr-only">Phone</dt>
-            <dd>
-              <a
-                href={`tel:${SITE.phone.replace(/\s/g, "")}`}
-                className="hover:text-ink-foreground"
-              >
-                {SITE.phone}
-              </a>
-            </dd>
-          </div>
-        </dl>
       </div>
     </section>
   );
