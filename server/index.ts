@@ -12,10 +12,10 @@ import { checkRateLimit } from "../src/lib/rate-limiter.ts";
 dotenv.config();
 
 const app = express();
-const PORT = Number(process.env.PORT) || 5001;
+const PORT = Number(process.env["PORT"]) || 5001;
 
 // Only trust proxy headers when explicitly enabled in deployment environment
-if (process.env.TRUST_PROXY === "true" || process.env.TRUST_PROXY === "1") {
+if (process.env["TRUST_PROXY"] === "true" || process.env["TRUST_PROXY"] === "1") {
   app.set("trust proxy", 1);
 } else {
   app.set("trust proxy", false);

@@ -181,8 +181,8 @@ export async function checkRateLimit(
   const windowMs = options?.windowMs ?? DEFAULT_WINDOW_MS;
   const now = Date.now();
 
-  const upstashUrl = process.env.UPSTASH_REDIS_REST_URL?.trim();
-  const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  const upstashUrl = process.env["UPSTASH_REDIS_REST_URL"]?.trim();
+  const upstashToken = process.env["UPSTASH_REDIS_REST_TOKEN"]?.trim();
 
   if (upstashUrl && upstashToken) {
     return checkUpstashRateLimit(upstashUrl, upstashToken, identifier, limit, windowMs, now);

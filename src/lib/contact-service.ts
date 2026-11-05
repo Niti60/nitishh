@@ -66,19 +66,23 @@ export const DEFAULT_ALLOWED_ORIGINS = [
 
 export function getAllowedOrigins(): string[] {
   const origins = [...DEFAULT_ALLOWED_ORIGINS];
-  if (process.env.ALLOWED_ORIGIN) {
-    origins.push(process.env.ALLOWED_ORIGIN.trim());
+  const allowedOrigin = process.env["ALLOWED_ORIGIN"]?.trim();
+  if (allowedOrigin) {
+    origins.push(allowedOrigin);
   }
-  if (process.env.APP_URL) {
-    origins.push(process.env.APP_URL.trim());
+  const appUrl = process.env["APP_URL"]?.trim();
+  if (appUrl) {
+    origins.push(appUrl);
   }
   return origins;
 }
 
 export function isValidOrigin(origin: string | undefined): boolean {
-  if (!origin) return true;
+  if (!origin || typeof origin !== "string") return true;
+  const trimmed = origin.trim();
+  if (!trimmed) return true;
   const allowed = getAllowedOrigins();
-  return allowed.includes(origin) || origin.endsWith(".vercel.app");
+  return allowed.includes(trimmed) || trimmed.endsWith(".vercel.app");
 }
 
 export function escapeHtml(value: string): string {
@@ -142,17 +146,32 @@ interface ResendErrorResponse {
   message?: string;
 }
 
+interface NodeException {
+  code?: string | number | undefined;
+  message?: string;
+  name?: string;
+}
+
+function isNodeException(val: unknown): val is NodeException {
+  return typeof val === "object" && val !== null && "code" in val;
+}
+
+function getErrorCode(exception: unknown): string {
+  if (isNodeException(exception)) {
+    const { code } = exception;
+    if (typeof code === "string") {
+      return code;
+    }
+  }
+  return "";
+}
+
 function analyzeResendFailure(
   error: ResendErrorResponse | null | undefined,
   exception?: unknown,
 ): { status: number; clientMessage: string } {
   // Extract error details safely without logging sensitive payloads
-  const errCode =
-    (exception &&
-      typeof exception === "object" &&
-      "code" in exception &&
-      (exception as { code: string }).code) ||
-    "";
+  const errCode: string = getErrorCode(exception);
   const errMessage = error?.message || (exception instanceof Error ? exception.message : "") || "";
   const errName = error?.name || (exception instanceof Error ? exception.name : "");
   const statusCode = error?.statusCode ?? null;
@@ -280,9 +299,9 @@ export async function processContactSubmission(rawBody: unknown): Promise<SendCo
     return { success: false, status: 400, error: "Submission rejected." };
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.CONTACT_FROM_EMAIL;
-  const toEmail = process.env.CONTACT_TO_EMAIL;
+  const apiKey = process.env["RESEND_API_KEY"];
+  const fromEmail = process.env["CONTACT_FROM_EMAIL"];
+  const toEmail = process.env["CONTACT_TO_EMAIL"];
 
   if (!apiKey || !fromEmail || !toEmail) {
     return { success: false, status: 500, error: "Email configuration is missing." };

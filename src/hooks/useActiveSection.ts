@@ -27,7 +27,10 @@ export function useActiveSection(enabled = true) {
       }
 
       if (viewportBottom >= docHeight - 48) {
-        setActive(sections[sections.length - 1].id as SectionId);
+        const lastSection = sections.at(-1);
+        if (lastSection) {
+          setActive(lastSection.id as SectionId);
+        }
         return;
       }
 
