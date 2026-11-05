@@ -4,6 +4,7 @@
     "src/**/*.tsx",
     "server/**/*.ts",
     "api/**/*.ts",
+    "netlify/**/*.ts",
     "test-hardening.ts",
     "vite.config.ts",
     "eslint.config.js"

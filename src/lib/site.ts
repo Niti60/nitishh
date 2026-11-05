@@ -3,7 +3,6 @@ export const SITE = {
   short: "Nitish Yadav",
   role: "Full Stack Developer · AI Engineer",
   location: "New Delhi, India",
-  email: "hi@nitishyadav.com",
   phone: "+91 96255 32559",
   website: "nitishyadav.com",
   status: "Currently: Full Stack Developer @ Admeasy",

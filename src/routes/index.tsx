@@ -7,7 +7,7 @@ import { ProjectCard } from "../components/ProjectCard";
 import { SiteNav } from "../components/SiteNav";
 import { useReveal } from "../hooks/useReveal";
 import { PROJECTS } from "../lib/projects";
-import { LINKS, SITE } from "../lib/site";
+import { LINKS, SITE, scrollToSection } from "../lib/site";
 import { ContactSection } from "../components/ContactSection";
 
 const FEATURED_PROJECTS = PROJECTS.filter((project) => project.category === "selected").slice(0, 3);
@@ -134,7 +134,6 @@ export const Route = createFileRoute("/")({
           "@type": "Person",
           name: SITE.name,
           jobTitle: "Full Stack Developer & AI Engineer",
-          email: `mailto:${SITE.email}`,
           url: "https://nitishyadav.com",
           address: { "@type": "PostalAddress", addressLocality: "New Delhi", addressCountry: "IN" },
         }),
@@ -412,8 +411,15 @@ function Footer() {
       <div className="flex flex-wrap gap-5">
         <Ext href={LINKS.social.github}>GitHub</Ext>
         <Ext href={LINKS.social.linkedin}>LinkedIn</Ext>
-        <a href={`mailto:${SITE.email}`} className="text-link">
-          Email
+        <a
+          href="#about"
+          className="text-link"
+          onClick={(e) => {
+            e.preventDefault();
+            scrollToSection("about");
+          }}
+        >
+          Contact
         </a>
         <Ext href={LINKS.resume}>Resume</Ext>
       </div>

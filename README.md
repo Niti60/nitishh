@@ -237,7 +237,7 @@ Connect
 
 💻 GitHub: github.com/Niti60
 
-✉️ Email: hi@nitishyadav.com
+✉️ Contact: [nitishyadav.com#about](https://nitishyadav.com#about)
 
 <p align="center">
   <b>Building real software, one system at a time.</b>
