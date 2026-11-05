@@ -1,23 +1,7 @@
-import { z } from "zod";
+import type { z } from "zod";
+import { contactSchema, countWords } from "./contact-service";
 
-export const contactSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Name is required.")
-    .max(100, "Name must be 100 characters or less."),
-  email: z
-    .string()
-    .trim()
-    .email("Please enter a valid email address.")
-    .max(254, "Email must be 254 characters or less."),
-  message: z
-    .string()
-    .trim()
-    .min(10, "Message must be at least 10 characters.")
-    .max(5000, "Message must be 5,000 characters or less."),
-  website: z.string().trim().max(1000).optional().default(""),
-});
+export { contactSchema, countWords };
 
 export type ContactFormValues = z.infer<typeof contactSchema>;
 

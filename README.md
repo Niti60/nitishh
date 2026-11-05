@@ -39,39 +39,11 @@ Tech Stack
 
 Frontend
 
-
-
-
-
-
-
-
-
 Backend
-
-
-
-
-
-
 
 Databases & Infrastructure
 
-
-
-
-
-
-
 Mobile & AI
-
-
-
-
-
-
-
-
 
 Experience
 

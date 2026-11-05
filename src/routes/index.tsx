@@ -225,9 +225,9 @@ function Portfolio() {
 function ProfileImage() {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="profile-frame">
+    <div className="profile-frame select-none">
       {failed || !SITE.profileImage ? (
-        <div className="grid h-full w-full place-items-center rounded-full bg-muted font-serif text-6xl text-muted-foreground">
+        <div className="grid h-full w-full select-none place-items-center rounded-full bg-muted font-serif text-6xl text-muted-foreground">
           NY
         </div>
       ) : (
@@ -236,7 +236,9 @@ function ProfileImage() {
           alt="Portrait of Nitish Kumar Yadav"
           width={400}
           height={400}
-          className="h-full w-full object-cover"
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
+          className="h-full w-full select-none object-cover"
           onError={() => setFailed(true)}
         />
       )}

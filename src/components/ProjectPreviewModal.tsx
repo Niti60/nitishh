@@ -1,4 +1,6 @@
+import { ExternalLink, Lock, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { usePreviewAutoScroll } from "../hooks/usePreviewAutoScroll";
 
@@ -19,11 +21,17 @@ export function ProjectPreviewModal({
   projectUrl,
   imageSrc,
 }: ProjectPreviewModalProps) {
+  const [mounted, setMounted] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+
   const reducedMotion =
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     onPointerEnter,
@@ -56,7 +64,7 @@ export function ProjectPreviewModal({
 
     const focusTimer = window.setTimeout(() => {
       closeButtonRef.current?.focus();
-    }, 30);
+    }, 40);
 
     window.addEventListener("keydown", handleEscape);
 
@@ -101,9 +109,15 @@ export function ProjectPreviewModal({
     }
   }, [isOpen, imageSrc]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  const liveHref = projectUrl
+    ? projectUrl.startsWith("http")
+      ? projectUrl
+      : `https://${projectUrl}`
+    : "";
+
+  return createPortal(
     <div
       className="project-modal__backdrop"
       role="presentation"
@@ -118,22 +132,41 @@ export function ProjectPreviewModal({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="project-modal__topbar">
-          <div>
-            <p id="project-preview-modal-title" className="project-modal__title">
-              {projectName}
-            </p>
-            <span className="project-modal__category">{projectCategory}</span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 id="project-preview-modal-title" className="project-modal__title">
+                {projectName}
+              </h2>
+              {projectCategory ? (
+                <span className="project-modal__category">{projectCategory}</span>
+              ) : null}
+            </div>
           </div>
 
-          <button
-            ref={closeButtonRef}
-            type="button"
-            className="project-modal__close"
-            aria-label={`Close ${projectName} preview`}
-            onClick={onClose}
-          >
-            <span aria-hidden="true">×</span>
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {liveHref ? (
+              <a
+                href={liveHref}
+                target="_blank"
+                rel="noreferrer"
+                className="project-modal__visit-link"
+                aria-label={`Visit live website for ${projectName}`}
+              >
+                <span>Live Site</span>
+                <ExternalLink className="size-3.5" aria-hidden="true" />
+              </a>
+            ) : null}
+
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="project-modal__close"
+              aria-label={`Close ${projectName} preview`}
+              onClick={onClose}
+            >
+              <X className="size-5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <div className="project-modal__browser">
@@ -144,9 +177,7 @@ export function ProjectPreviewModal({
               <span />
             </div>
             <div className="project-modal__address-wrap">
-              <span className="project-modal__lock" aria-hidden="true">
-                🔒
-              </span>
+              <Lock className="size-3 text-muted-foreground opacity-80" aria-hidden="true" />
               <span className="project-preview__url project-modal__url">{projectUrl}</span>
             </div>
           </div>
@@ -155,7 +186,7 @@ export function ProjectPreviewModal({
             ref={viewportRef}
             className="project-modal__viewport"
             tabIndex={0}
-            aria-label={`${projectName} expanded project preview`}
+            aria-label={`${projectName} expanded project preview. Scroll to explore.`}
             onPointerEnter={onPointerEnter}
             onPointerLeave={onPointerLeave}
             onPointerDown={onPointerDown}
@@ -166,12 +197,15 @@ export function ProjectPreviewModal({
               src={imageSrc}
               alt={`${projectName} long-form project screenshot`}
               className="project-preview__image"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
             />
           </div>
         </div>
 
         {!isAutoScrolling ? <div className="sr-only">Scroll to explore</div> : null}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
