@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { usePreviewAutoScroll } from "../hooks/usePreviewAutoScroll";
 
 type ProjectPreviewModalProps = {
   isOpen: boolean;
@@ -18,6 +20,27 @@ export function ProjectPreviewModal({
   imageSrc,
 }: ProjectPreviewModalProps) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const reducedMotion =
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const {
+    onPointerEnter,
+    onPointerLeave,
+    onPointerDown,
+    onTouchMove,
+    onWheel,
+    resetPreview,
+    stopAutoScroll,
+  } = usePreviewAutoScroll(viewportRef, {
+    enabled: !reducedMotion,
+    hoverDelay: 1000,
+    duration: 12000,
+    resetOnLeave: true,
+    onAutoScrollStart: () => setIsAutoScrolling(true),
+    onAutoScrollStop: () => setIsAutoScrolling(false),
+  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -41,8 +64,42 @@ export function ProjectPreviewModal({
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = previousOverflow;
+      stopAutoScroll();
+      resetPreview();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, resetPreview, stopAutoScroll]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const query = window.matchMedia("(hover: hover) and (pointer: fine)");
+    if (!query.matches) {
+      resetPreview();
+      stopAutoScroll();
+    }
+  }, [isOpen, resetPreview, stopAutoScroll]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const onChange = () => {
+      if (!mediaQuery.matches) {
+        resetPreview();
+        stopAutoScroll();
+      }
+    };
+
+    mediaQuery.addEventListener("change", onChange);
+
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, [isOpen, resetPreview, stopAutoScroll]);
+
+  useEffect(() => {
+    if (isOpen && viewportRef.current) {
+      viewportRef.current.scrollTop = 0;
+    }
+  }, [isOpen, imageSrc]);
 
   if (!isOpen) return null;
 
@@ -94,7 +151,17 @@ export function ProjectPreviewModal({
             </div>
           </div>
 
-          <div className="project-modal__viewport" tabIndex={0} aria-label={`${projectName} expanded project preview`}>
+          <div
+            ref={viewportRef}
+            className="project-modal__viewport"
+            tabIndex={0}
+            aria-label={`${projectName} expanded project preview`}
+            onPointerEnter={onPointerEnter}
+            onPointerLeave={onPointerLeave}
+            onPointerDown={onPointerDown}
+            onTouchMove={onTouchMove}
+            onWheel={onWheel}
+          >
             <img
               src={imageSrc}
               alt={`${projectName} long-form project screenshot`}
@@ -102,6 +169,8 @@ export function ProjectPreviewModal({
             />
           </div>
         </div>
+
+        {!isAutoScrolling ? <div className="sr-only">Scroll to explore</div> : null}
       </div>
     </div>
   );
