@@ -16,6 +16,11 @@ export default defineConfig({
   plugins: [
     tanstackStart({
       server: { entry: "server" },
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        filter: ({ path }) => !path.endsWith(".pdf"),
+      },
     }),
     viteReact(),
     tailwindcss(),
