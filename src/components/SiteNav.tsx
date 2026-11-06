@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useActiveSection } from "../hooks/useActiveSection";
@@ -12,35 +12,7 @@ import {
   storePendingSection,
   type SectionId,
 } from "../lib/site";
-
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => setDark(document.documentElement.classList.contains("dark")), []);
-  const set = (d: boolean) => {
-    setDark(d);
-    document.documentElement.classList.toggle("dark", d);
-    try {
-      localStorage.setItem("theme", d ? "dark" : "light");
-    } catch {
-      // ignore
-    }
-  };
-  return (
-    <div className="theme-pill" role="group" aria-label="Color theme">
-      <button
-        type="button"
-        aria-label="Light theme"
-        aria-pressed={!dark}
-        onClick={() => set(false)}
-      >
-        <Sun className="size-3.5" />
-      </button>
-      <button type="button" aria-label="Dark theme" aria-pressed={dark} onClick={() => set(true)}>
-        <Moon className="size-3.5" />
-      </button>
-    </div>
-  );
-}
+import { ThemeToggle } from "./ThemeToggle";
 
 function Ext({
   href,

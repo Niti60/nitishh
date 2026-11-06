@@ -55,34 +55,90 @@ export const MAX_BODY_SIZE = 32 * 1024; // 32KB
 const RESEND_TIMEOUT_MS = 10000; // 10 seconds
 
 export const DEFAULT_ALLOWED_ORIGINS = [
+  "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:5001",
-  "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:5001",
-  "http://127.0.0.1:5173",
+  "https://nitishh.netlify.app",
   "https://nitishyadav.com",
 ];
 
-export function getAllowedOrigins(): string[] {
-  const origins = [...DEFAULT_ALLOWED_ORIGINS];
-  const allowedOrigin = process.env["ALLOWED_ORIGIN"]?.trim();
-  if (allowedOrigin) {
-    origins.push(allowedOrigin);
+/**
+ * Safely parses and normalizes an origin string into standard protocol://host(:port) lowercase format.
+ * Returns null if the origin is invalid or not an http/https URL.
+ */
+export function normalizeOrigin(origin: string): string | null {
+  try {
+    const trimmed = origin.trim();
+    if (!trimmed) return null;
+    const url = new URL(trimmed);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return url.origin.toLowerCase();
+  } catch {
+    return null;
   }
-  const appUrl = process.env["APP_URL"]?.trim();
-  if (appUrl) {
-    origins.push(appUrl);
-  }
-  return origins;
 }
 
-export function isValidOrigin(origin: string | undefined): boolean {
-  if (!origin || typeof origin !== "string") return true;
-  const trimmed = origin.trim();
-  if (!trimmed) return true;
+/**
+ * Retrieves the explicit list of allowed origins from defaults and environment variables.
+ */
+export function getAllowedOrigins(): string[] {
+  const origins = new Set<string>();
+
+  // Add default verified production and local origins
+  for (const origin of DEFAULT_ALLOWED_ORIGINS) {
+    const normalized = normalizeOrigin(origin);
+    if (normalized) origins.add(normalized);
+  }
+
+  // Parse comma-separated ALLOWED_ORIGINS environment variable
+  const envAllowed = process.env["ALLOWED_ORIGINS"];
+  if (envAllowed) {
+    const parts = envAllowed
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    for (const part of parts) {
+      const normalized = normalizeOrigin(part);
+      if (normalized) origins.add(normalized);
+    }
+  }
+
+  // Legacy singular ALLOWED_ORIGIN fallback
+  const singularAllowed = process.env["ALLOWED_ORIGIN"]?.trim();
+  if (singularAllowed) {
+    const normalized = normalizeOrigin(singularAllowed);
+    if (normalized) origins.add(normalized);
+  }
+
+  // Configured APP_URL environment variable
+  const appUrl = process.env["APP_URL"]?.trim();
+  if (appUrl) {
+    const normalized = normalizeOrigin(appUrl);
+    if (normalized) origins.add(normalized);
+  }
+
+  return Array.from(origins);
+}
+
+/**
+ * Validates whether an incoming Origin header is permitted.
+ * Missing origins are safely accepted for non-browser/server-to-server calls unless REQUIRE_ORIGIN=true.
+ */
+export function isValidOrigin(origin: string | undefined | null): boolean {
+  if (origin === undefined || origin === null || origin === "") {
+    return process.env["REQUIRE_ORIGIN"] !== "true";
+  }
+
+  if (typeof origin !== "string") return false;
+
+  const normalized = normalizeOrigin(origin);
+  if (!normalized) return false;
+
   const allowed = getAllowedOrigins();
-  return allowed.includes(trimmed) || trimmed.endsWith(".vercel.app");
+  return allowed.includes(normalized);
 }
 
 export function escapeHtml(value: string): string {

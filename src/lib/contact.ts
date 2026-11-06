@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { buildApiUrl } from "./api-config";
 
 export const contactSchema = z.object({
   name: z
@@ -35,7 +36,8 @@ export type ContactApiError = {
 };
 
 export async function submitContact(data: ContactFormData): Promise<{ message: string }> {
-  const response = await fetch("/api/contact", {
+  const endpoint = buildApiUrl("/api/contact");
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

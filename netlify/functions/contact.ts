@@ -1,22 +1,53 @@
 import {
   processContactSubmission,
   isValidOrigin,
+  normalizeOrigin,
   MAX_BODY_SIZE,
 } from "../../src/lib/contact-service.ts";
 import { checkRateLimit } from "../../src/lib/rate-limiter.ts";
 
 export default async function handler(request: Request): Promise<Response> {
+  const origin = request.headers.get("origin");
+  const normalizedOrigin = origin ? normalizeOrigin(origin) : null;
+  const isOriginValid = isValidOrigin(origin);
+
+  // Common response headers with CORS support for permitted origins
+  const defaultHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    Vary: "Origin",
+  };
+
+  if (normalizedOrigin && isOriginValid) {
+    defaultHeaders["Access-Control-Allow-Origin"] = normalizedOrigin;
+    defaultHeaders["Access-Control-Allow-Methods"] = "POST, OPTIONS";
+    defaultHeaders["Access-Control-Allow-Headers"] = "Content-Type, Accept";
+    defaultHeaders["Access-Control-Max-Age"] = "86400";
+  }
+
+  // Handle CORS preflight OPTIONS
+  if (request.method === "OPTIONS") {
+    if (origin && !isOriginValid) {
+      return new Response(JSON.stringify({ success: false, error: "Origin not allowed." }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(null, {
+      status: 204,
+      headers: defaultHeaders,
+    });
+  }
+
   // 1. Method check
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), {
       status: 405,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     });
   }
 
   // 2. Origin validation
-  const origin = request.headers.get("origin") ?? undefined;
-  if (!isValidOrigin(origin)) {
+  if (!isOriginValid) {
     return new Response(JSON.stringify({ success: false, error: "Origin not allowed." }), {
       status: 403,
       headers: { "Content-Type": "application/json" },
@@ -28,7 +59,7 @@ export default async function handler(request: Request): Promise<Response> {
   if (contentLength > MAX_BODY_SIZE) {
     return new Response(JSON.stringify({ success: false, error: "Payload too large." }), {
       status: 413,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     });
   }
 
@@ -37,7 +68,7 @@ export default async function handler(request: Request): Promise<Response> {
   if (!contentType.includes("application/json")) {
     return new Response(JSON.stringify({ success: false, error: "Unsupported media type." }), {
       status: 415,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     });
   }
 
@@ -58,7 +89,7 @@ export default async function handler(request: Request): Promise<Response> {
       {
         status: 429,
         headers: {
-          "Content-Type": "application/json",
+          ...defaultHeaders,
           "Retry-After": String(Math.ceil((rateLimit.resetTime - Date.now()) / 1000)),
         },
       },
@@ -72,7 +103,7 @@ export default async function handler(request: Request): Promise<Response> {
   } catch {
     return new Response(JSON.stringify({ success: false, error: "Invalid JSON payload." }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     });
   }
 
@@ -82,7 +113,7 @@ export default async function handler(request: Request): Promise<Response> {
   if (result.success) {
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     });
   }
 
@@ -94,7 +125,7 @@ export default async function handler(request: Request): Promise<Response> {
     }),
     {
       status: result.status,
-      headers: { "Content-Type": "application/json" },
+      headers: defaultHeaders,
     },
   );
 }

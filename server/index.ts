@@ -51,7 +51,11 @@ app.use(express.json({ limit: MAX_BODY_SIZE }));
 // Handle invalid JSON syntax and oversized payloads safely
 app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
   if (err && typeof err === "object") {
-    const errorObj = err as { type?: string; status?: number };
+    const errorObj = err as { type?: string; status?: number; message?: string };
+    if (errorObj.message === "Origin not allowed") {
+      res.status(403).json({ success: false, error: "Origin not allowed." });
+      return;
+    }
     if (errorObj.type === "entity.too.large" || errorObj.status === 413) {
       res.status(413).json({ success: false, error: "Payload too large." });
       return;

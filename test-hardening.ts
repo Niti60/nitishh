@@ -252,6 +252,115 @@ async function runTests() {
         `Sixth request within 15 minutes -> rate limited with 429 and Retry-After (got ${resSixth.status})`,
       );
 
+      // --- 6. Centralized API Config & Origin Normalization Tests ---
+      console.log("\n--- 6. Centralized API Config & Origin Tests ---");
+      const { buildApiUrl, API_BASE_URL } = await import("./src/lib/api-config.ts");
+      const { isValidOrigin, normalizeOrigin, getAllowedOrigins } =
+        await import("./src/lib/contact-service.ts");
+
+      assert(
+        buildApiUrl("/api/contact") ===
+          (API_BASE_URL ? `${API_BASE_URL}/api/contact` : "/api/contact"),
+        "buildApiUrl cleanly formats endpoint without double slashes",
+      );
+      assert(
+        normalizeOrigin("https://nitishh.netlify.app/") === "https://nitishh.netlify.app",
+        "normalizeOrigin trims trailing slash and lowercases",
+      );
+      assert(
+        normalizeOrigin("https://NITISHH.NETLIFY.APP") === "https://nitishh.netlify.app",
+        "normalizeOrigin normalizes casing",
+      );
+      assert(
+        normalizeOrigin("not-a-valid-url") === null,
+        "normalizeOrigin returns null for invalid URLs",
+      );
+
+      assert(
+        isValidOrigin("https://nitishh.netlify.app"),
+        "Origin https://nitishh.netlify.app is allowed",
+      );
+      assert(isValidOrigin("https://nitishyadav.com"), "Origin https://nitishyadav.com is allowed");
+      assert(isValidOrigin("http://localhost:5173"), "Origin http://localhost:5173 is allowed");
+      assert(
+        !isValidOrigin("https://malicious-site.com"),
+        "Origin https://malicious-site.com is rejected",
+      );
+      assert(!isValidOrigin("null"), "Origin 'null' string is rejected");
+
+      // --- 7. Netlify Function & HTTP Method Tests ---
+      console.log("\n--- 7. Netlify Function & HTTP Method Tests ---");
+      resetMemoryRateLimiter(); // Reset rate limiter for Netlify function tests
+      const netlifyHandler = (await import("./netlify/functions/contact.ts")).default;
+
+      // GET to server endpoint -> 405 Method Not Allowed
+      const resServerGet = await fetch(baseUrl, { method: "GET" });
+      const dataServerGet = await resServerGet.json();
+      assert(
+        resServerGet.status === 405 && dataServerGet.error === "Method not allowed.",
+        "GET /api/contact on server returns 405 JSON",
+      );
+
+      // Netlify function: GET -> 405 Method Not Allowed
+      const netlifyGetReq = new Request("https://nitishh.netlify.app/api/contact", {
+        method: "GET",
+      });
+      const netlifyGetRes = await netlifyHandler(netlifyGetReq);
+      const netlifyGetData = await netlifyGetRes.json();
+      assert(
+        netlifyGetRes.status === 405 && netlifyGetData.error === "Method not allowed.",
+        "Netlify function GET returns 405 JSON",
+      );
+
+      // Netlify function: OPTIONS preflight from allowed origin -> 204 with CORS headers
+      const netlifyOptionsReq = new Request("https://nitishh.netlify.app/api/contact", {
+        method: "OPTIONS",
+        headers: { Origin: "https://nitishh.netlify.app" },
+      });
+      const netlifyOptionsRes = await netlifyHandler(netlifyOptionsReq);
+      assert(
+        netlifyOptionsRes.status === 204 &&
+          netlifyOptionsRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://nitishh.netlify.app",
+        "Netlify function OPTIONS from allowed origin returns 204 with Access-Control-Allow-Origin",
+      );
+
+      // Netlify function: POST from unapproved origin -> 403 Forbidden
+      const netlifyForbiddenReq = new Request("https://nitishh.netlify.app/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://unauthorized-domain.com",
+        },
+        body: JSON.stringify({ name: "A", email: "a@b.com", message: "1234567890" }),
+      });
+      const netlifyForbiddenRes = await netlifyHandler(netlifyForbiddenReq);
+      const netlifyForbiddenData = await netlifyForbiddenRes.json();
+      assert(
+        netlifyForbiddenRes.status === 403 && netlifyForbiddenData.error === "Origin not allowed.",
+        "Netlify function POST from unapproved origin returns 403 Origin not allowed",
+      );
+
+      // Netlify function: POST from legitimate origin (https://nitishh.netlify.app) with invalid body -> 400
+      const netlifyValidOriginReq = new Request("https://nitishh.netlify.app/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://nitishh.netlify.app",
+        },
+        body: JSON.stringify({ name: "", email: "not-an-email", message: "" }),
+      });
+      const netlifyValidOriginRes = await netlifyHandler(netlifyValidOriginReq);
+      const netlifyValidOriginData = await netlifyValidOriginRes.json();
+      assert(
+        netlifyValidOriginRes.status === 400 &&
+          netlifyValidOriginData.success === false &&
+          Boolean(netlifyValidOriginData.fieldErrors) &&
+          netlifyValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://nitishh.netlify.app",
+        "Netlify function POST from https://nitishh.netlify.app is accepted and validated with CORS header",
+      );
+
       console.log("\n==========================================");
       console.log(
         `TOTAL TESTS: ${passedCount + failedCount} | PASSED: ${passedCount} | FAILED: ${failedCount}`,
