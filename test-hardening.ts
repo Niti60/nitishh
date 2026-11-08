@@ -296,11 +296,11 @@ async function runTests() {
       );
       assert(!isValidOrigin("null"), "Origin 'null' string is rejected");
 
-      // --- 7. Netlify & Vercel Universal Function Tests ---
-      console.log("\n--- 7. Netlify & Vercel Universal Function Tests ---");
+      // --- 7. Unified Server Entry & Netlify Function Tests ---
+      console.log("\n--- 7. Unified Server Entry & Netlify Function Tests ---");
       resetMemoryRateLimiter(); // Reset rate limiter for function tests
       const netlifyHandler = (await import("./netlify/functions/contact.ts")).default;
-      const vercelHandler = (await import("./api/contact.ts")).default;
+      const startServer = (await import("./src/server.ts")).default;
 
       // GET to server endpoint -> 405 Method Not Allowed
       const resServerGet = await fetch(baseUrl, { method: "GET" });
@@ -310,15 +310,15 @@ async function runTests() {
         "GET /api/contact on server returns 405 JSON",
       );
 
-      // Vercel function: GET -> 405 Method Not Allowed
+      // Unified server entry: GET /api/contact -> 405 Method Not Allowed
       const vercelGetReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "GET",
       });
-      const vercelGetRes = (await vercelHandler(vercelGetReq)) as Response;
+      const vercelGetRes = await startServer.fetch(vercelGetReq, {}, {});
       const vercelGetData = await vercelGetRes.json();
       assert(
         vercelGetRes.status === 405 && vercelGetData.error === "Method not allowed.",
-        "Vercel function GET returns 405 JSON",
+        "Unified server.ts GET /api/contact returns 405 JSON",
       );
 
       // Netlify function: GET -> 405 Method Not Allowed
@@ -332,17 +332,17 @@ async function runTests() {
         "Netlify function GET returns 405 JSON",
       );
 
-      // Vercel function: OPTIONS preflight from allowed origin -> 204 with CORS headers
+      // Unified server entry: OPTIONS preflight from allowed origin -> 204 with CORS headers
       const vercelOptionsReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "OPTIONS",
         headers: { Origin: "https://nitishh.vercel.app" },
       });
-      const vercelOptionsRes = (await vercelHandler(vercelOptionsReq)) as Response;
+      const vercelOptionsRes = await startServer.fetch(vercelOptionsReq, {}, {});
       assert(
         vercelOptionsRes.status === 204 &&
           vercelOptionsRes.headers.get("Access-Control-Allow-Origin") ===
             "https://nitishh.vercel.app",
-        "Vercel function OPTIONS from allowed origin returns 204 with Access-Control-Allow-Origin",
+        "Unified server.ts OPTIONS from allowed origin returns 204 with Access-Control-Allow-Origin",
       );
 
       // Netlify function: OPTIONS preflight from allowed origin -> 204 with CORS headers
@@ -374,7 +374,7 @@ async function runTests() {
         "Netlify function POST from unapproved origin returns 403 Origin not allowed",
       );
 
-      // Vercel function: POST from legitimate origin (https://nitishh.vercel.app) with invalid body -> 400
+      // Unified server entry: POST from legitimate origin (https://nitishh.vercel.app) with invalid body -> 400
       const vercelValidOriginReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "POST",
         headers: {
@@ -383,7 +383,7 @@ async function runTests() {
         },
         body: JSON.stringify({ name: "", email: "not-an-email", message: "" }),
       });
-      const vercelValidOriginRes = (await vercelHandler(vercelValidOriginReq)) as Response;
+      const vercelValidOriginRes = await startServer.fetch(vercelValidOriginReq, {}, {});
       const vercelValidOriginData = await vercelValidOriginRes.json();
       assert(
         vercelValidOriginRes.status === 400 &&
@@ -391,7 +391,7 @@ async function runTests() {
           Boolean(vercelValidOriginData.fieldErrors) &&
           vercelValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
             "https://nitishh.vercel.app",
-        "Vercel function POST from https://nitishh.vercel.app is accepted and validated with CORS header",
+        "Unified server.ts POST from https://nitishh.vercel.app is accepted and validated with CORS header",
       );
 
       console.log("\n==========================================");

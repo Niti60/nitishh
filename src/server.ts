@@ -48,8 +48,8 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const url = new URL(request.url);
-      if (url.pathname === "/api/contact") {
+      const url = new URL(request.url, "http://localhost");
+      if (url.pathname === "/api/contact" || url.pathname === "/api/contact/") {
         return await handleContactWebRequest(request);
       }
 
