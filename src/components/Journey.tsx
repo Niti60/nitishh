@@ -20,38 +20,38 @@ type Highlight = {
 const MILESTONES: Milestone[] = [
   {
     year: "2022",
-    title: "The Foundations",
+    title: "Web Fundamentals",
     description:
-      "Started learning HTML, CSS, and JavaScript. Built my first responsive websites and began understanding how the web works.",
-    focus: ["HTML", "CSS", "JavaScript", "Responsive Design"],
+      "Started with HTML, CSS, and modern JavaScript. Built responsive websites and developed an appreciation for browser fundamentals, accessibility, and semantic markup.",
+    focus: ["HTML5", "CSS3", "JavaScript", "Responsive Design"],
   },
   {
     year: "2023",
-    title: "From Interfaces to React",
+    title: "React & Modern Frontend",
     description:
-      "Moved into React and modern frontend development. Started building reusable components and improving UI quality.",
-    focus: ["React", "JavaScript", "Component Architecture", "UI Development"],
+      "Shifted focus to React and the modern frontend ecosystem. Built modular UI components, managed client state, and learned how to build fluid user interfaces.",
+    focus: ["React", "TypeScript", "Tailwind CSS", "UI Systems"],
   },
   {
     year: "2024",
-    title: "Backend, APIs & Real Projects",
+    title: "Backend, APIs & Databases",
     description:
-      "Expanded into backend development with Node.js, Express, and MongoDB. Started working on real-world projects, freelancing, APIs, Git, and deployment.",
+      "Expanded into backend development with Node.js, Express, and MongoDB. Designed REST APIs, implemented JWT authentication, and worked on real-world freelance client deliveries.",
     focus: ["Node.js", "Express", "MongoDB", "REST APIs", "Git"],
   },
   {
     year: "2025",
-    title: "Building with a Team",
+    title: "Production Systems at Scale",
     description:
-      "Co-founded Admeasy and started building products beyond individual projects. Worked across full-stack development, product systems, dashboards, and backend infrastructure.",
-    focus: ["Next.js", "TypeScript", "Supabase", "Redis", "BullMQ", "Docker"],
+      "Joined Admeasy to architect admissions and student management software. Built full-stack workflows with Next.js, added Redis caching and BullMQ queues, and shipped mobile apps.",
+    focus: ["Next.js", "Redis", "BullMQ", "Capacitor", "React Native", "Docker"],
   },
   {
     year: "2026",
-    title: "Deeper into AI & Systems",
+    title: "AI Engineering & Architecture",
     description:
-      "Moved deeper into AI engineering and production-grade systems. Exploring AI-powered products while strengthening system design, backend architecture, and performance.",
-    focus: ["AI Engineering", "LangGraph", "PyTorch", "TensorFlow", "FastAPI", "System Design"],
+      "Developing practical AI-powered software with FastAPI, Gemini API, and LangGraph while deepening system design, database indexing, and backend performance.",
+    focus: ["AI Engineering", "Python", "FastAPI", "Gemini API", "System Design"],
     exploring: ["PyTorch", "TensorFlow", "FastAPI"],
   },
 ];
@@ -59,20 +59,20 @@ const MILESTONES: Milestone[] = [
 const HIGHLIGHTS: Highlight[] = [
   {
     index: "01",
-    title: "Three Startup Attempts",
-    body: "Three startup attempts. One taught me how to fail, another showed me what it takes to generate revenue, and each one pushed me to build better.",
+    title: "Practical Startup Experience",
+    body: "Working on early-stage products taught me how to balance speed with maintainability, handle production bugs under pressure, and ship working features that users rely on.",
     figure: "03",
   },
   {
     index: "02",
     title: "4,000+ GitHub Contributions",
-    body: "A year of consistent building, experimentation, debugging, and iteration.",
+    body: "A continuous year of writing code, building APIs, fixing edge cases, and pushing production commits.",
     figure: "4K+",
   },
   {
     index: "03",
     title: "BCA — IGNOU",
-    body: "Pursuing a Bachelor of Computer Applications while learning through real-world product development and engineering.",
+    body: "Pursuing a Bachelor of Computer Applications while working as an active full-stack software engineer in New Delhi.",
     figure: "BCA",
   },
 ];

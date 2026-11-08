@@ -5,14 +5,15 @@ export const SITE = {
   location: "New Delhi, India",
   phone: "+91 96255 32559",
   website: "nitishyadav.com",
-  status: "Currently: Full Stack Developer @ Admeasy",
+  canonicalUrl: "https://nitishyadav.com",
+  status: "Full Stack Developer @ Admeasy",
   profileImage: "/profile.jpg",
 } as const;
 
 export const LINKS = {
   resume: "/Nitish-Kumar-Yadav-Resume.pdf",
   social: {
-    github: "",
+    github: "https://github.com/Niti60",
     linkedin: "",
   },
 } as const;

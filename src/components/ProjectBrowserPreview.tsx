@@ -111,7 +111,9 @@ export function ProjectBrowserPreview({
         {hasImage ? (
           <img
             src={project.cover}
-            alt={`${project.name} long-form project screenshot`}
+            alt={`${project.name} full-stack web application interface screenshot`}
+            width={1280}
+            height={800}
             className="project-preview__image"
             loading="lazy"
             onError={() => setError(true)}

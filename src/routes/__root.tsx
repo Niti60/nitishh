@@ -77,11 +77,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         name: "description",
-        content: "Portfolio of Nitish Kumar Yadav, Full Stack Developer and AI Engineer.",
+        content:
+          "Nitish Kumar Yadav is a Full Stack Developer & AI Engineer in New Delhi, building scalable web applications, REST APIs, and practical AI tools.",
       },
       { name: "author", content: "Nitish Kumar Yadav" },
+      { property: "og:site_name", content: "Nitish Kumar Yadav" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://nitishyadav.com/profile.jpg" },
+      { property: "og:locale", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://nitishyadav.com/profile.jpg" },
     ],
     links: [
       {

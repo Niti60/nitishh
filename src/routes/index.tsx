@@ -17,57 +17,56 @@ const ENGINEERING = [
     n: "01",
     title: "Full Stack Development",
     summary:
-      "Production-grade web applications, SaaS products, and user-facing systems built for speed, clarity, and real-world use.",
+      "Production web applications, customer portals, and internal dashboards built for responsiveness, accessibility, and real-world utility.",
     items: ["React", "Next.js", "TypeScript", "Node.js", "Express", "REST APIs"],
   },
   {
     n: "02",
     title: "Backend & Architecture",
     summary:
-      "Designing secure, maintainable systems with the right trade-offs between performance, scale, and developer velocity.",
+      "Designing RESTful APIs, relational and NoSQL databases, authentication flows, caching layers, and background job queues.",
     items: [
-      "API design",
-      "Authentication & authorization",
+      "API Design",
+      "Authentication",
       "MongoDB",
       "SQL",
       "Redis",
       "BullMQ",
-      "Database design",
+      "Database Architecture",
     ],
   },
   {
     n: "03",
     title: "AI Engineering",
     summary:
-      "Building AI-powered experiences and integrations that turn product ideas into usable workflows and intelligent features.",
-    items: ["Python", "Gemini API", "AI integrations", "AI-powered products", "LangGraph"],
+      "Integrating LLMs, building intent classification pipelines, and creating practical conversational tools using Python, FastAPI, and the Gemini API.",
+    items: ["Python", "FastAPI", "Gemini API", "AI Integration", "LangGraph", "Prompt Engineering"],
   },
   {
     n: "04",
     title: "Infrastructure & Performance",
     summary:
-      "Optimizing deployments, caching flows, background jobs, and application performance across the full stack.",
+      "Setting up CI/CD pipelines, Docker containers, caching strategies, and optimizing server response times.",
     items: [
       "Docker",
       "CI/CD",
       "GitHub Actions",
-      "Caching",
-      "Background jobs",
-      "Deployment",
-      "Performance optimization",
+      "Redis Caching",
+      "Background Jobs",
+      "Cloud Deployment",
     ],
   },
   {
     n: "05",
     title: "Engineering Focus",
     summary:
-      "I care most about backend architecture, scalable system design, performance engineering, and shipping reliable software.",
+      "Prioritizing clean API contracts, database indexing, predictable state management, and reliable deployment workflows.",
     items: [
       "System Design",
       "Backend Architecture",
       "Performance Engineering",
-      "Data Structures & Algorithms",
-      "AI-powered Products",
+      "Data Structures",
+      "Production Reliability",
     ],
   },
 ] as const;
@@ -79,10 +78,10 @@ const EXPERIENCE = [
     period: "Mar 2026 – Present",
     current: true,
     points: [
-      "Architected and developed scalable full-stack applications using React.js, Node.js, Express, and MongoDB with secure authentication and optimized APIs.",
-      "Integrated Redis caching, BullMQ background jobs, and CI/CD pipelines using GitHub Actions to improve performance and deployment efficiency.",
-      "Delivered **50+ responsive UI/UX pages** focused on clean design, scalability, and user experience.",
-      "Independently developed and deployed mobile applications using Capacitor and Android Studio on the Google Play Store.",
+      "Architected and developed full-stack web applications using React.js, Node.js, Express, and MongoDB with secure JWT authentication and optimized REST APIs.",
+      "Integrated Redis caching and BullMQ background jobs to process asynchronous notifications and automated email delivery.",
+      "Delivered **50+ responsive UI/UX pages** with mobile-first layouts, consistent component systems, and accessible interactions.",
+      "Independently developed and deployed mobile applications to the Google Play Store using Capacitor and Android Studio.",
     ],
   },
   {
@@ -90,10 +89,10 @@ const EXPERIENCE = [
     role: "Full Stack Developer Intern — Paid Internship (₹11,000/month)",
     period: "Nov 2025 – Feb 2026",
     points: [
-      "Architected and developed scalable Order Management and Authentication APIs, ensuring high performance and security.",
-      "Built a real-time Admin Verification Dashboard for efficient applicant review, approval workflows, and operational oversight.",
-      "Developed **2 mobile applications** using React Native and Android Studio, extending core platform functionality to mobile users.",
-      "Consistently delivered features ahead of deadlines by leveraging AI tools to boost development speed and code quality.",
+      "Developed Order Management and Authentication APIs with role-based permissions and input validation.",
+      "Built a real-time Admin Verification Dashboard for tracking applicant reviews, status changes, and operational audits.",
+      "Engineered **2 cross-platform mobile applications** using React Native and Android Studio for on-site staff.",
+      "Used AI-assisted coding and debugging workflows to accelerate feature delivery while maintaining code quality.",
     ],
   },
   {
@@ -101,42 +100,109 @@ const EXPERIENCE = [
     role: "Web Developer Intern — Non-Monetary",
     period: "Sep 2025 – Oct 2025",
     points: [
-      "Assisted in maintaining and debugging web applications by resolving UI and functional issues.",
-      "Collaborated with the team to fix frontend and backend bugs.",
-      "Improved overall system stability, performance, and code quality.",
+      "Maintained and debugged client web applications by resolving UI regressions, styling inconsistencies, and functional bugs.",
+      "Collaborated with developers to fix frontend and backend issues across multiple active student portals.",
+      "Improved overall system stability, performance, and code quality across active client projects.",
     ],
   },
 ];
 
-const TITLE = "Nitish Kumar Yadav — Full Stack Developer & AI Engineer";
+const TITLE = "Nitish Kumar Yadav | Full Stack Developer & AI Engineer in New Delhi";
 const DESC =
-  "Full Stack Developer and AI Engineer building scalable web applications, SaaS platforms, APIs, mobile applications and AI-powered products.";
+  "Nitish Kumar Yadav is a Full Stack Developer & AI Engineer in New Delhi. Building scalable web apps, REST APIs, and AI tools with React, Node.js, and Python.";
+
+const HOMEPAGE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://nitishyadav.com/#person",
+      name: "Nitish Kumar Yadav",
+      alternateName: ["Nitish Yadav"],
+      url: "https://nitishyadav.com",
+      image: "https://nitishyadav.com/profile.jpg",
+      jobTitle: "Full Stack Developer & AI Engineer",
+      worksFor: {
+        "@type": "Organization",
+        name: "Admeasy Admission Solutions Pvt. Ltd.",
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "New Delhi",
+        addressCountry: "IN",
+      },
+      sameAs: ["https://github.com/Niti60"],
+      knowsAbout: [
+        "Full Stack Web Development",
+        "React.js",
+        "Next.js",
+        "Node.js",
+        "TypeScript",
+        "Python",
+        "FastAPI",
+        "MongoDB",
+        "Redis",
+        "BullMQ",
+        "REST APIs",
+        "AI Engineering",
+        "System Design",
+      ],
+      description: DESC,
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://nitishyadav.com/#website",
+      url: "https://nitishyadav.com",
+      name: "Nitish Kumar Yadav — Full Stack Developer & AI Engineer",
+      description: DESC,
+      publisher: {
+        "@id": "https://nitishyadav.com/#person",
+      },
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": "https://nitishyadav.com/#webpage",
+      url: "https://nitishyadav.com",
+      name: TITLE,
+      description: DESC,
+      isPartOf: {
+        "@id": "https://nitishyadav.com/#website",
+      },
+      about: {
+        "@id": "https://nitishyadav.com/#person",
+      },
+      mainEntity: {
+        "@id": "https://nitishyadav.com/#person",
+      },
+    },
+  ],
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: TITLE },
       { name: "description", content: DESC },
+      { name: "author", content: SITE.name },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESC },
       { property: "og:type", content: "profile" },
       { property: "og:url", content: "https://nitishyadav.com" },
+      { property: "og:image", content: "https://nitishyadav.com/profile.jpg" },
+      {
+        property: "og:image:alt",
+        content: "Nitish Kumar Yadav — Full Stack Developer & AI Engineer in New Delhi",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: TITLE },
       { name: "twitter:description", content: DESC },
+      { name: "twitter:image", content: "https://nitishyadav.com/profile.jpg" },
     ],
     links: [{ rel: "canonical", href: "https://nitishyadav.com" }],
     scripts: [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Person",
-          name: SITE.name,
-          jobTitle: "Full Stack Developer & AI Engineer",
-          url: "https://nitishyadav.com",
-          address: { "@type": "PostalAddress", addressLocality: "New Delhi", addressCountry: "IN" },
-        }),
+        children: JSON.stringify(HOMEPAGE_SCHEMA),
       },
     ],
   }),
@@ -232,7 +298,7 @@ function ProfileImage() {
       ) : (
         <img
           src={SITE.profileImage}
-          alt="Portrait of Nitish Kumar Yadav"
+          alt="Portrait of Nitish Kumar Yadav — Full Stack Developer and AI Engineer based in New Delhi"
           width={400}
           height={400}
           draggable={false}
@@ -257,14 +323,15 @@ function Hero() {
             {SITE.name} <span className="mx-2">/</span> {SITE.role}
           </h1>
           <p className="hero-enter mt-5 max-w-3xl font-serif text-[clamp(2.4rem,5.8vw,5.2rem)] leading-[0.98] tracking-[-0.01em]">
-            Building full-stack systems and AI-powered products.
+            Building web applications, backend systems, and AI tools.
           </p>
           <p className="hero-enter mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            I build production web applications, SaaS systems, APIs, mobile applications and
-            AI-powered products.
+            I&apos;m a Full Stack Developer and AI Engineer based in New Delhi, India. I build
+            production web applications, REST APIs, and practical AI tools — working across frontend
+            interfaces, server architecture, databases, and deployment.
           </p>
           <p className="hero-enter mt-6 font-mono text-xs text-muted-foreground">
-            React · Next.js · Node.js · TypeScript · MongoDB · Python · AI
+            React · Next.js · TypeScript · Node.js · Express · MongoDB · Python · FastAPI
           </p>
           <div className="hero-enter mt-9 flex flex-wrap items-center gap-3">
             <Link to="/work" className="btn-secondary inline-flex items-center gap-2">
@@ -302,7 +369,7 @@ function Work() {
       <SectionHead
         n="02"
         title="Selected Work"
-        sub="Products, experiments and engineering projects I've built."
+        sub="Production web applications, client systems, and engineering projects I've built."
       />
       <div className="mt-14 grid gap-20">
         {FEATURED_PROJECTS.map((p, i) => (
@@ -322,7 +389,7 @@ function Engineering() {
   return (
     <section id="engineering" className="border-y bg-surface">
       <div className="page-shell section-space">
-        <SectionHead n="03" title="Engineering" sub="What I work on." />
+        <SectionHead n="03" title="Engineering" sub="Areas of software engineering I focus on." />
         <div className="mt-14 grid gap-px overflow-hidden border bg-border sm:grid-cols-2 lg:grid-cols-5">
           {ENGINEERING.map((e) => (
             <div key={e.n} className="reveal bg-background p-6">
@@ -383,17 +450,20 @@ function About() {
         </div>
         <div className="reveal grid max-w-2xl gap-5 text-lg leading-relaxed lg:col-span-8">
           <p>
-            I&apos;m Nitish, a full-stack developer based in New Delhi. I started with web
-            development, moved into production backend systems and mobile applications, and am now
-            going deeper into AI and machine learning.
+            I&apos;m Nitish Kumar Yadav, a Full Stack Developer and AI Engineer based in New Delhi.
+            I build production software across the entire web stack — writing clean TypeScript and
+            React on the frontend, designing reliable Node.js and Express APIs, and engineering AI
+            pipelines in Python.
           </p>
           <p className="text-muted-foreground">
-            I enjoy understanding what happens underneath the interface — APIs, authentication,
-            databases, background jobs, deployment and the systems connecting them.
+            I care about what happens underneath the user interface: reliable authentication, schema
+            design in MongoDB, Redis caching layers, background queue processing with BullMQ, and
+            automated CI/CD pipelines.
           </p>
           <p className="text-muted-foreground">
-            I&apos;m currently pursuing my BCA at IGNOU while building and shipping software
-            alongside it.
+            I&apos;m currently pursuing my BCA at IGNOU while working full-time at Admeasy. When
+            I&apos;m not shipping software, I&apos;m exploring machine learning workflows, studying
+            distributed system design, and building open-source projects on GitHub.
           </p>
         </div>
       </div>
@@ -406,7 +476,7 @@ function Footer() {
     <footer className="page-shell flex flex-col gap-4 border-t py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
       <div>
         <p>© 2026 {SITE.name}</p>
-        <p className="mt-1 font-mono text-xs">{SITE.role}</p>
+        <p className="mt-1 font-mono text-xs">{SITE.role} · New Delhi, India</p>
       </div>
       <div className="flex flex-wrap gap-5">
         <Ext href={LINKS.social.github}>GitHub</Ext>

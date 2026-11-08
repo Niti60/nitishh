@@ -195,7 +195,9 @@ export function ProjectPreviewModal({
           >
             <img
               src={imageSrc}
-              alt={`${projectName} long-form project screenshot`}
+              alt={`${projectName} application workflow and interface screenshot`}
+              width={1280}
+              height={800}
               className="project-preview__image"
               draggable={false}
               onDragStart={(e) => e.preventDefault()}

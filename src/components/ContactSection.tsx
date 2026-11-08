@@ -42,7 +42,9 @@ export function ContactSection() {
     try {
       await submitContact(values);
       setSubmitState("success");
-      setSubmitMessage("Thanks — your message has been sent. I'll get back to you soon.");
+      setSubmitMessage(
+        "Thanks for reaching out — your message has been sent. I'll get back to you within 24–48 hours.",
+      );
       reset(defaultValues);
     } catch (error) {
       setSubmitState("error");
@@ -63,11 +65,11 @@ export function ContactSection() {
               Get in touch
             </p>
             <h2 className="mt-4 font-serif text-[clamp(2.4rem,5vw,4.2rem)] leading-[0.98] tracking-[-0.03em]">
-              Have something in mind?
+              Let&apos;s build together.
             </h2>
             <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-              Have a project, an opportunity, or just want to connect? I&apos;d love to hear from
-              you.
+              Whether you have an engineering role, a software project to build, or want to discuss
+              full-stack architecture and AI integrations, send me a message below.
             </p>
           </div>
 
