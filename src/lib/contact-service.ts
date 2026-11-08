@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { z } from "zod";
+import { checkRateLimit } from "./rate-limiter.ts";
 
 /**
  * Counts the number of words in a string by splitting on whitespace.
@@ -61,8 +62,9 @@ export const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:5173",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:5001",
-  "https://nitishh.netlify.app",
+  "https://nitishh.vercel.app",
   "https://nitishyadav.com",
+  "https://nitishh.netlify.app",
 ];
 
 /**
@@ -126,6 +128,7 @@ export function getAllowedOrigins(): string[] {
 /**
  * Validates whether an incoming Origin header is permitted.
  * Missing origins are safely accepted for non-browser/server-to-server calls unless REQUIRE_ORIGIN=true.
+ * Automatically accepts legitimate Vercel production and preview deployment URLs (*.vercel.app).
  */
 export function isValidOrigin(origin: string | undefined | null): boolean {
   if (origin === undefined || origin === null || origin === "") {
@@ -138,7 +141,18 @@ export function isValidOrigin(origin: string | undefined | null): boolean {
   if (!normalized) return false;
 
   const allowed = getAllowedOrigins();
-  return allowed.includes(normalized);
+  if (allowed.includes(normalized)) return true;
+
+  try {
+    const url = new URL(normalized);
+    if (url.hostname === "vercel.app" || url.hostname.endsWith(".vercel.app")) {
+      return true;
+    }
+  } catch {
+    // Ignore invalid url
+  }
+
+  return false;
 }
 
 export function escapeHtml(value: string): string {
@@ -410,4 +424,142 @@ export async function processContactSubmission(rawBody: unknown): Promise<SendCo
       error: diagnosis.clientMessage,
     };
   }
+}
+
+/**
+ * Safely extracts client IP from Web API Request headers on Vercel, Netlify, or standard reverse proxies.
+ */
+export function getRequestClientIp(request: Request): string {
+  const headers = request.headers;
+  return (
+    headers.get("x-vercel-ip") ||
+    headers.get("x-real-ip") ||
+    headers.get("x-nf-client-connection-ip") ||
+    headers.get("client-ip") ||
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "127.0.0.1"
+  );
+}
+
+/**
+ * Universal Web Standard request handler for /api/contact.
+ * Compatible with TanStack Start server entries, Vercel Serverless/Edge Functions, and Netlify Functions.
+ */
+export async function handleContactWebRequest(request: Request): Promise<Response> {
+  const origin = request.headers.get("origin");
+  const normalizedOrigin = origin ? normalizeOrigin(origin) : null;
+  const isOriginValid = isValidOrigin(origin);
+
+  // Common response headers with CORS support for permitted origins
+  const defaultHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    Vary: "Origin",
+  };
+
+  if (normalizedOrigin && isOriginValid) {
+    defaultHeaders["Access-Control-Allow-Origin"] = normalizedOrigin;
+    defaultHeaders["Access-Control-Allow-Methods"] = "POST, OPTIONS";
+    defaultHeaders["Access-Control-Allow-Headers"] = "Content-Type, Accept";
+    defaultHeaders["Access-Control-Max-Age"] = "86400";
+  }
+
+  // Handle CORS preflight OPTIONS
+  if (request.method === "OPTIONS") {
+    if (origin && !isOriginValid) {
+      return new Response(JSON.stringify({ success: false, error: "Origin not allowed." }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(null, {
+      status: 204,
+      headers: defaultHeaders,
+    });
+  }
+
+  // 1. Method check
+  if (request.method !== "POST") {
+    return new Response(JSON.stringify({ success: false, error: "Method not allowed." }), {
+      status: 405,
+      headers: defaultHeaders,
+    });
+  }
+
+  // 2. Origin validation
+  if (!isOriginValid) {
+    return new Response(JSON.stringify({ success: false, error: "Origin not allowed." }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // 3. Payload size check
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (contentLength > MAX_BODY_SIZE) {
+    return new Response(JSON.stringify({ success: false, error: "Payload too large." }), {
+      status: 413,
+      headers: defaultHeaders,
+    });
+  }
+
+  // 4. Content-Type check
+  const contentType = request.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return new Response(JSON.stringify({ success: false, error: "Unsupported media type." }), {
+      status: 415,
+      headers: defaultHeaders,
+    });
+  }
+
+  // 5. Rate limiting by IP
+  const clientIp = getRequestClientIp(request);
+  const rateLimit = await checkRateLimit(clientIp);
+  if (!rateLimit.success) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Too many requests. Please try again later.",
+      }),
+      {
+        status: 429,
+        headers: {
+          ...defaultHeaders,
+          "Retry-After": String(Math.ceil((rateLimit.resetTime - Date.now()) / 1000)),
+        },
+      },
+    );
+  }
+
+  // 6. JSON body parsing
+  let rawBody: unknown;
+  try {
+    rawBody = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ success: false, error: "Invalid JSON payload." }), {
+      status: 400,
+      headers: defaultHeaders,
+    });
+  }
+
+  // 7. Authoritative submission processing
+  const result = await processContactSubmission(rawBody);
+
+  if (result.success) {
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: defaultHeaders,
+    });
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: result.error,
+      ...(result.fieldErrors ? { fieldErrors: result.fieldErrors } : {}),
+    }),
+    {
+      status: result.status,
+      headers: defaultHeaders,
+    },
+  );
 }

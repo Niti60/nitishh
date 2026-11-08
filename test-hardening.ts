@@ -280,6 +280,14 @@ async function runTests() {
         isValidOrigin("https://nitishh.netlify.app"),
         "Origin https://nitishh.netlify.app is allowed",
       );
+      assert(
+        isValidOrigin("https://nitishh.vercel.app"),
+        "Origin https://nitishh.vercel.app is allowed",
+      );
+      assert(
+        isValidOrigin("https://nitishh-git-main-niti60.vercel.app"),
+        "Origin https://nitishh-git-main-niti60.vercel.app is allowed",
+      );
       assert(isValidOrigin("https://nitishyadav.com"), "Origin https://nitishyadav.com is allowed");
       assert(isValidOrigin("http://localhost:5173"), "Origin http://localhost:5173 is allowed");
       assert(
@@ -288,10 +296,11 @@ async function runTests() {
       );
       assert(!isValidOrigin("null"), "Origin 'null' string is rejected");
 
-      // --- 7. Netlify Function & HTTP Method Tests ---
-      console.log("\n--- 7. Netlify Function & HTTP Method Tests ---");
-      resetMemoryRateLimiter(); // Reset rate limiter for Netlify function tests
+      // --- 7. Netlify & Vercel Universal Function Tests ---
+      console.log("\n--- 7. Netlify & Vercel Universal Function Tests ---");
+      resetMemoryRateLimiter(); // Reset rate limiter for function tests
       const netlifyHandler = (await import("./netlify/functions/contact.ts")).default;
+      const vercelHandler = (await import("./api/contact.ts")).default;
 
       // GET to server endpoint -> 405 Method Not Allowed
       const resServerGet = await fetch(baseUrl, { method: "GET" });
@@ -299,6 +308,17 @@ async function runTests() {
       assert(
         resServerGet.status === 405 && dataServerGet.error === "Method not allowed.",
         "GET /api/contact on server returns 405 JSON",
+      );
+
+      // Vercel function: GET -> 405 Method Not Allowed
+      const vercelGetReq = new Request("https://nitishh.vercel.app/api/contact", {
+        method: "GET",
+      });
+      const vercelGetRes = (await vercelHandler(vercelGetReq)) as Response;
+      const vercelGetData = await vercelGetRes.json();
+      assert(
+        vercelGetRes.status === 405 && vercelGetData.error === "Method not allowed.",
+        "Vercel function GET returns 405 JSON",
       );
 
       // Netlify function: GET -> 405 Method Not Allowed
@@ -310,6 +330,19 @@ async function runTests() {
       assert(
         netlifyGetRes.status === 405 && netlifyGetData.error === "Method not allowed.",
         "Netlify function GET returns 405 JSON",
+      );
+
+      // Vercel function: OPTIONS preflight from allowed origin -> 204 with CORS headers
+      const vercelOptionsReq = new Request("https://nitishh.vercel.app/api/contact", {
+        method: "OPTIONS",
+        headers: { Origin: "https://nitishh.vercel.app" },
+      });
+      const vercelOptionsRes = (await vercelHandler(vercelOptionsReq)) as Response;
+      assert(
+        vercelOptionsRes.status === 204 &&
+          vercelOptionsRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://nitishh.vercel.app",
+        "Vercel function OPTIONS from allowed origin returns 204 with Access-Control-Allow-Origin",
       );
 
       // Netlify function: OPTIONS preflight from allowed origin -> 204 with CORS headers
@@ -341,24 +374,24 @@ async function runTests() {
         "Netlify function POST from unapproved origin returns 403 Origin not allowed",
       );
 
-      // Netlify function: POST from legitimate origin (https://nitishh.netlify.app) with invalid body -> 400
-      const netlifyValidOriginReq = new Request("https://nitishh.netlify.app/api/contact", {
+      // Vercel function: POST from legitimate origin (https://nitishh.vercel.app) with invalid body -> 400
+      const vercelValidOriginReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin: "https://nitishh.netlify.app",
+          Origin: "https://nitishh.vercel.app",
         },
         body: JSON.stringify({ name: "", email: "not-an-email", message: "" }),
       });
-      const netlifyValidOriginRes = await netlifyHandler(netlifyValidOriginReq);
-      const netlifyValidOriginData = await netlifyValidOriginRes.json();
+      const vercelValidOriginRes = (await vercelHandler(vercelValidOriginReq)) as Response;
+      const vercelValidOriginData = await vercelValidOriginRes.json();
       assert(
-        netlifyValidOriginRes.status === 400 &&
-          netlifyValidOriginData.success === false &&
-          Boolean(netlifyValidOriginData.fieldErrors) &&
-          netlifyValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
-            "https://nitishh.netlify.app",
-        "Netlify function POST from https://nitishh.netlify.app is accepted and validated with CORS header",
+        vercelValidOriginRes.status === 400 &&
+          vercelValidOriginData.success === false &&
+          Boolean(vercelValidOriginData.fieldErrors) &&
+          vercelValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://nitishh.vercel.app",
+        "Vercel function POST from https://nitishh.vercel.app is accepted and validated with CORS header",
       );
 
       console.log("\n==========================================");
