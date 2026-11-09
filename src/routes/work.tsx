@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { ProjectCard } from "../components/ProjectCard";
+import { SiteFooter } from "../components/SiteFooter";
 import { SiteNav } from "../components/SiteNav";
 import { PROJECTS, getProjectsByCategory } from "../lib/projects";
 import { SITE } from "../lib/site";
@@ -105,7 +106,6 @@ export const Route = createFileRoute("/work")({
 function WorkPage() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="scroll-rule" aria-hidden />
       <SiteNav />
       <main className="page-shell py-10 md:py-16">
         <nav
@@ -167,6 +167,7 @@ function WorkPage() {
           </ul>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

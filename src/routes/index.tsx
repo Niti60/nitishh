@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Journey } from "../components/Journey";
 import { ProjectCard } from "../components/ProjectCard";
+import { SiteFooter } from "../components/SiteFooter";
 import { SiteNav } from "../components/SiteNav";
 import { useReveal } from "../hooks/useReveal";
 import { PROJECTS } from "../lib/projects";
@@ -265,7 +266,6 @@ function Portfolio() {
 
   return (
     <>
-      <div className="scroll-rule" aria-hidden />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-200 focus:bg-background focus:p-2"
@@ -282,7 +282,7 @@ function Portfolio() {
         <About />
         <ContactSection />
       </main>
-      <Footer />
+      <SiteFooter />
     </>
   );
 }
@@ -334,9 +334,15 @@ function Hero() {
             React · Next.js · TypeScript · Node.js · Express · MongoDB · Python · FastAPI
           </p>
           <div className="hero-enter mt-9 flex flex-wrap items-center gap-3">
-            <Link to="/work" className="btn-secondary inline-flex items-center gap-2">
-              Explore All Projects <ArrowRight aria-hidden className="size-4" />
-            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = "/contact";
+              }}
+              className="btn-cta inline-flex items-center gap-2"
+            >
+              Contact Me <ArrowRight aria-hidden className="size-4" />
+            </button>
             <Ext href={LINKS.resume} className="btn-secondary">
               Resume
             </Ext>
@@ -468,31 +474,5 @@ function About() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="page-shell flex flex-col gap-4 border-t py-8 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-      <div>
-        <p>© 2026 {SITE.name}</p>
-        <p className="mt-1 font-mono text-xs">{SITE.role} · New Delhi, India</p>
-      </div>
-      <div className="flex flex-wrap gap-5">
-        <Ext href={LINKS.social.github}>GitHub</Ext>
-        <Ext href={LINKS.social.linkedin}>LinkedIn</Ext>
-        <a
-          href="#about"
-          className="text-link"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection("about");
-          }}
-        >
-          Contact
-        </a>
-        <Ext href={LINKS.resume}>Resume</Ext>
-      </div>
-    </footer>
   );
 }

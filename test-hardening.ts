@@ -7,6 +7,7 @@ import {
   buildHtmlEmail,
 } from "./src/lib/contact-service.ts";
 import { resetMemoryRateLimiter } from "./src/lib/rate-limiter.ts";
+import { calculateScrollProgress } from "./src/lib/scroll-progress.ts";
 
 async function runTests() {
   console.log("=== STARTING SECURITY & VALIDATION TEST SUITE ===\n");
@@ -276,9 +277,19 @@ async function runTests() {
         "normalizeOrigin returns null for invalid URLs",
       );
 
+      // Origin unit assertions
+      assert(isValidOrigin("https://nitishyadav.com"), "Origin https://nitishyadav.com is allowed");
       assert(
-        isValidOrigin("https://nitishh.netlify.app"),
-        "Origin https://nitishh.netlify.app is allowed",
+        isValidOrigin("https://www.nitishyadav.com"),
+        "Origin https://www.nitishyadav.com is allowed",
+      );
+      assert(
+        isValidOrigin("https://www.nitishyadav.com/"),
+        "Origin https://www.nitishyadav.com/ (with trailing slash) is normalized and allowed",
+      );
+      assert(
+        isValidOrigin("HTTPS://WWW.NITISHYADAV.COM"),
+        "Origin HTTPS://WWW.NITISHYADAV.COM (uppercase) is normalized and allowed",
       );
       assert(
         isValidOrigin("https://nitishh.vercel.app"),
@@ -288,13 +299,69 @@ async function runTests() {
         isValidOrigin("https://nitishh-git-main-niti60.vercel.app"),
         "Origin https://nitishh-git-main-niti60.vercel.app is allowed",
       );
-      assert(isValidOrigin("https://nitishyadav.com"), "Origin https://nitishyadav.com is allowed");
+      assert(
+        isValidOrigin("https://nitishh.netlify.app"),
+        "Origin https://nitishh.netlify.app is allowed",
+      );
       assert(isValidOrigin("http://localhost:5173"), "Origin http://localhost:5173 is allowed");
+      assert(isValidOrigin("http://localhost:3000"), "Origin http://localhost:3000 is allowed");
+      assert(isValidOrigin("http://127.0.0.1:5173"), "Origin http://127.0.0.1:5173 is allowed");
+
+      // Untrusted origins
       assert(
         !isValidOrigin("https://malicious-site.com"),
         "Origin https://malicious-site.com is rejected",
       );
+      assert(
+        !isValidOrigin("https://nitishyadav.com.evil.com"),
+        "Origin https://nitishyadav.com.evil.com (subdomain spoofing) is rejected",
+      );
+      assert(
+        !isValidOrigin("https://www.nitishyadav.com.evil.com"),
+        "Origin https://www.nitishyadav.com.evil.com (subdomain spoofing) is rejected",
+      );
+      assert(
+        !isValidOrigin("https://fake-nitishyadav.com"),
+        "Origin https://fake-nitishyadav.com is rejected",
+      );
+      assert(
+        !isValidOrigin("http://nitishyadav.com"),
+        "Insecure http://nitishyadav.com in production is rejected",
+      );
+
+      // Malformed origins
       assert(!isValidOrigin("null"), "Origin 'null' string is rejected");
+      assert(!isValidOrigin("not-a-valid-url"), "Malformed origin 'not-a-valid-url' is rejected");
+      assert(
+        !isValidOrigin("javascript:alert(1)"),
+        "Malformed origin 'javascript:alert(1)' is rejected",
+      );
+      assert(!isValidOrigin("file:///etc/passwd"), "Malformed origin 'file:///...' is rejected");
+      assert(!isValidOrigin("://bad-protocol"), "Malformed origin '://bad-protocol' is rejected");
+
+      // Missing origin tests
+      assert(
+        isValidOrigin(undefined),
+        "Missing origin (undefined) is permitted for server-to-server calls when REQUIRE_ORIGIN is unset",
+      );
+      assert(
+        isValidOrigin(null),
+        "Missing origin (null) is permitted for server-to-server calls when REQUIRE_ORIGIN is unset",
+      );
+      assert(
+        isValidOrigin(""),
+        "Missing origin (empty string) is permitted for server-to-server calls when REQUIRE_ORIGIN is unset",
+      );
+
+      // Missing origin when REQUIRE_ORIGIN=true
+      process.env["REQUIRE_ORIGIN"] = "true";
+      assert(
+        !isValidOrigin(undefined),
+        "Missing origin (undefined) is rejected when REQUIRE_ORIGIN=true",
+      );
+      assert(!isValidOrigin(null), "Missing origin (null) is rejected when REQUIRE_ORIGIN=true");
+      assert(!isValidOrigin(""), "Missing origin ('') is rejected when REQUIRE_ORIGIN=true");
+      delete process.env["REQUIRE_ORIGIN"];
 
       // --- 7. Unified Server Entry & Netlify Function Tests ---
       console.log("\n--- 7. Unified Server Entry & Netlify Function Tests ---");
@@ -332,7 +399,32 @@ async function runTests() {
         "Netlify function GET returns 405 JSON",
       );
 
-      // Unified server entry: OPTIONS preflight from allowed origin -> 204 with CORS headers
+      // Unified server entry: OPTIONS preflight from https://www.nitishyadav.com -> 204 with CORS header
+      const wwwOptionsReq = new Request("https://www.nitishyadav.com/api/contact", {
+        method: "OPTIONS",
+        headers: { Origin: "https://www.nitishyadav.com" },
+      });
+      const wwwOptionsRes = await startServer.fetch(wwwOptionsReq, {}, {});
+      assert(
+        wwwOptionsRes.status === 204 &&
+          wwwOptionsRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://www.nitishyadav.com",
+        "Unified server.ts OPTIONS from https://www.nitishyadav.com returns 204 with Access-Control-Allow-Origin",
+      );
+
+      // Unified server entry: OPTIONS preflight from https://nitishyadav.com -> 204 with CORS header
+      const apexOptionsReq = new Request("https://nitishyadav.com/api/contact", {
+        method: "OPTIONS",
+        headers: { Origin: "https://nitishyadav.com" },
+      });
+      const apexOptionsRes = await startServer.fetch(apexOptionsReq, {}, {});
+      assert(
+        apexOptionsRes.status === 204 &&
+          apexOptionsRes.headers.get("Access-Control-Allow-Origin") === "https://nitishyadav.com",
+        "Unified server.ts OPTIONS from https://nitishyadav.com returns 204 with Access-Control-Allow-Origin",
+      );
+
+      // Unified server entry: OPTIONS preflight from allowed Vercel origin -> 204 with CORS headers
       const vercelOptionsReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "OPTIONS",
         headers: { Origin: "https://nitishh.vercel.app" },
@@ -358,6 +450,22 @@ async function runTests() {
         "Netlify function OPTIONS from allowed origin returns 204 with Access-Control-Allow-Origin",
       );
 
+      // Unified server entry: POST from unapproved origin -> 403 Forbidden
+      const serverForbiddenReq = new Request("https://nitishyadav.com/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://unauthorized-domain.com",
+        },
+        body: JSON.stringify({ name: "A", email: "a@b.com", message: "1234567890" }),
+      });
+      const serverForbiddenRes = await startServer.fetch(serverForbiddenReq, {}, {});
+      const serverForbiddenData = await serverForbiddenRes.json();
+      assert(
+        serverForbiddenRes.status === 403 && serverForbiddenData.error === "Origin not allowed.",
+        "Unified server.ts POST from unapproved origin returns 403 Origin not allowed",
+      );
+
       // Netlify function: POST from unapproved origin -> 403 Forbidden
       const netlifyForbiddenReq = new Request("https://nitishh.netlify.app/api/contact", {
         method: "POST",
@@ -374,7 +482,47 @@ async function runTests() {
         "Netlify function POST from unapproved origin returns 403 Origin not allowed",
       );
 
-      // Unified server entry: POST from legitimate origin (https://nitishh.vercel.app) with invalid body -> 400
+      // Unified server entry: POST from https://www.nitishyadav.com with validation trigger -> 400 with CORS header
+      const wwwValidOriginReq = new Request("https://www.nitishyadav.com/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://www.nitishyadav.com",
+        },
+        body: JSON.stringify({ name: "", email: "not-an-email", message: "" }),
+      });
+      const wwwValidOriginRes = await startServer.fetch(wwwValidOriginReq, {}, {});
+      const wwwValidOriginData = await wwwValidOriginRes.json();
+      assert(
+        wwwValidOriginRes.status === 400 &&
+          wwwValidOriginData.success === false &&
+          Boolean(wwwValidOriginData.fieldErrors) &&
+          wwwValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://www.nitishyadav.com",
+        "Unified server.ts POST from https://www.nitishyadav.com is accepted and validated with CORS header",
+      );
+
+      // Unified server entry: POST from https://nitishyadav.com with validation trigger -> 400 with CORS header
+      const apexValidOriginReq = new Request("https://nitishyadav.com/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://nitishyadav.com",
+        },
+        body: JSON.stringify({ name: "", email: "not-an-email", message: "" }),
+      });
+      const apexValidOriginRes = await startServer.fetch(apexValidOriginReq, {}, {});
+      const apexValidOriginData = await apexValidOriginRes.json();
+      assert(
+        apexValidOriginRes.status === 400 &&
+          apexValidOriginData.success === false &&
+          Boolean(apexValidOriginData.fieldErrors) &&
+          apexValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
+            "https://nitishyadav.com",
+        "Unified server.ts POST from https://nitishyadav.com is accepted and validated with CORS header",
+      );
+
+      // Unified server entry: POST from https://nitishh.vercel.app with validation trigger -> 400 with CORS header
       const vercelValidOriginReq = new Request("https://nitishh.vercel.app/api/contact", {
         method: "POST",
         headers: {
@@ -392,6 +540,52 @@ async function runTests() {
           vercelValidOriginRes.headers.get("Access-Control-Allow-Origin") ===
             "https://nitishh.vercel.app",
         "Unified server.ts POST from https://nitishh.vercel.app is accepted and validated with CORS header",
+      );
+
+      // --- 8. Scroll Progress Calculation Unit Tests ---
+      console.log("\n--- 8. Scroll Progress Calculation Tests ---");
+      assert(
+        calculateScrollProgress(0, 2000, 1000) === 0,
+        "Scroll progress at top (scrollTop=0) is exactly 0%",
+      );
+      const p25 = calculateScrollProgress(250, 2000, 1000);
+      assert(
+        Math.abs(p25 - 25) < 0.01,
+        `Scroll progress at ~25% scroll is 25% (got ${p25}%)`,
+      );
+      const p50 = calculateScrollProgress(500, 2000, 1000);
+      assert(
+        Math.abs(p50 - 50) < 0.01,
+        `Scroll progress at ~50% scroll is 50% (got ${p50}%)`,
+      );
+      const p75 = calculateScrollProgress(750, 2000, 1000);
+      assert(
+        Math.abs(p75 - 75) < 0.01,
+        `Scroll progress at ~75% scroll is 75% (got ${p75}%)`,
+      );
+      assert(
+        calculateScrollProgress(1000, 2000, 1000) === 100,
+        "Scroll progress at absolute bottom (scrollTop=1000) is exactly 100%",
+      );
+      assert(
+        calculateScrollProgress(998.5, 2000, 1000) === 100,
+        "Scroll progress within 2px rounding tolerance of bottom snaps to 100%",
+      );
+      assert(
+        calculateScrollProgress(0, 1000, 1000) === 0,
+        "Scroll progress when content does not overflow (scrollHeight == clientHeight) is 0%",
+      );
+      assert(
+        calculateScrollProgress(100, 800, 1000) === 0,
+        "Scroll progress when content is shorter than viewport (scrollHeight < clientHeight) is 0%",
+      );
+      assert(
+        calculateScrollProgress(-50, 2000, 1000) === 0,
+        "Scroll progress clamps negative scrollTop (iOS rubber-banding) to 0%",
+      );
+      assert(
+        calculateScrollProgress(1200, 2000, 1000) === 100,
+        "Scroll progress clamps overscroll to 100%",
       );
 
       console.log("\n==========================================");

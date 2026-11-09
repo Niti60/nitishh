@@ -53,14 +53,14 @@
   --secondary-foreground: oklch(0.145 0.006 85);
   --muted: oklch(0.95 0.004 90);
   --muted-foreground: oklch(0.48 0.008 85);
-  --accent: oklch(0.91 0.045 155);
-  --accent-foreground: oklch(0.2 0.035 155);
-  --accent-strong: oklch(0.47 0.115 156);
+  --accent: #6b9bcb;
+  --accent-foreground: #0e2238;
+  --accent-strong: #3b74a8;
   --destructive: oklch(0.57 0.21 27);
   --destructive-foreground: oklch(0.985 0.003 90);
   --border: oklch(0.88 0.005 90);
   --input: oklch(0.88 0.005 90);
-  --ring: oklch(0.47 0.115 156);
+  --ring: #6b9bcb;
   --surface: oklch(0.96 0.004 90);
   --ink: oklch(0.15 0.006 85);
   --ink-foreground: oklch(0.975 0.003 90);
@@ -81,12 +81,12 @@
   --secondary-foreground: oklch(0.96 0.003 90);
   --muted: oklch(0.21 0.004 85);
   --muted-foreground: oklch(0.68 0.006 90);
-  --accent: oklch(0.3 0.05 155);
-  --accent-foreground: oklch(0.92 0.04 155);
-  --accent-strong: oklch(0.72 0.13 156);
+  --accent: #1e334a;
+  --accent-foreground: #d6e6f7;
+  --accent-strong: #6b9bcb;
   --border: oklch(0.27 0.004 85);
   --input: oklch(0.27 0.004 85);
-  --ring: oklch(0.72 0.13 156);
+  --ring: #6b9bcb;
   --surface: oklch(0.17 0.004 85);
   --ink: oklch(0.96 0.003 90);
   --ink-foreground: oklch(0.145 0.004 85);
@@ -138,9 +138,10 @@
   height: 2px;
   width: 100%;
   transform-origin: left;
-  background: var(--color-accent-strong);
-  animation: scroll-progress linear;
-  animation-timeline: scroll(root);
+  background: #6b9bcb;
+  transform: scaleX(0);
+  will-change: transform;
+  pointer-events: none;
 }
 .nav-link {
   position: relative;
@@ -154,7 +155,7 @@
   position: absolute;
   inset: auto 0 0;
   height: 1px;
-  background: var(--color-accent-strong);
+  background: #6b9bcb;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 180ms ease;
@@ -203,7 +204,7 @@
   background: color-mix(in oklab, var(--color-foreground) 5%, transparent);
 }
 .theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--color-accent-strong);
+  outline: 2px solid #6b9bcb;
   outline-offset: 2px;
 }
 .theme-toggle-btn:active {
@@ -250,11 +251,12 @@ html.dark .theme-toggle-btn .theme-icon--sun {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-accent-strong);
+  background: #6b9bcb;
 }
 .btn-primary,
 .btn-secondary,
-.btn-invert {
+.btn-invert,
+.btn-cta {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -267,7 +269,35 @@ html.dark .theme-toggle-btn .theme-icon--sun {
   letter-spacing: 0.06em;
   transition:
     transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 180ms ease;
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+.btn-cta {
+  background: #6b9bcb;
+  color: #ffffff;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.btn-cta:hover {
+  background: #5a8aba;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.btn-cta:active {
+  background: #4f7fa8;
+  transform: translateY(0);
+}
+.btn-cta:focus-visible {
+  outline: 2px solid #6b9bcb;
+  outline-offset: 2px;
+}
+.dark .btn-cta:hover {
+  background: #7da8d4;
+  color: #ffffff;
+}
+.dark .btn-cta:active {
+  background: #5a8aba;
 }
 .btn-primary {
   background: var(--color-foreground);
@@ -391,7 +421,7 @@ html.dark .theme-toggle-btn .theme-icon--sun {
   background: var(--color-border);
 }
 .journey-timeline__fill {
-  background: var(--color-accent-strong);
+  background: #6b9bcb;
   transform: scaleY(var(--journey-progress));
   transform-origin: top;
   transition: transform 120ms linear;
@@ -441,8 +471,8 @@ html.dark .theme-toggle-btn .theme-icon--sun {
   color: var(--color-accent-strong);
 }
 .journey-item.is-active .journey-item__node {
-  background: var(--color-accent-strong);
-  border-color: var(--color-accent-strong);
+  background: #6b9bcb;
+  border-color: #6b9bcb;
   transform: scale(1.08);
 }
 .journey-item__title {

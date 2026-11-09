@@ -64,6 +64,7 @@ export const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:5001",
   "https://nitishh.vercel.app",
   "https://nitishyadav.com",
+  "https://www.nitishyadav.com",
   "https://nitishh.netlify.app",
 ];
 
@@ -73,7 +74,7 @@ export const DEFAULT_ALLOWED_ORIGINS = [
  */
 export function normalizeOrigin(origin: string): string | null {
   try {
-    const trimmed = origin.trim();
+    const trimmed = origin.trim().replace(/^['"]|['"]$/g, "");
     if (!trimmed) return null;
     const url = new URL(trimmed);
     if (url.protocol !== "http:" && url.protocol !== "https:") return null;
@@ -100,7 +101,7 @@ export function getAllowedOrigins(): string[] {
   if (envAllowed) {
     const parts = envAllowed
       .split(",")
-      .map((s) => s.trim())
+      .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
       .filter(Boolean);
     for (const part of parts) {
       const normalized = normalizeOrigin(part);
@@ -109,14 +110,14 @@ export function getAllowedOrigins(): string[] {
   }
 
   // Legacy singular ALLOWED_ORIGIN fallback
-  const singularAllowed = process.env["ALLOWED_ORIGIN"]?.trim();
+  const singularAllowed = process.env["ALLOWED_ORIGIN"]?.trim().replace(/^['"]|['"]$/g, "");
   if (singularAllowed) {
     const normalized = normalizeOrigin(singularAllowed);
     if (normalized) origins.add(normalized);
   }
 
   // Configured APP_URL environment variable
-  const appUrl = process.env["APP_URL"]?.trim();
+  const appUrl = process.env["APP_URL"]?.trim().replace(/^['"]|['"]$/g, "");
   if (appUrl) {
     const normalized = normalizeOrigin(appUrl);
     if (normalized) origins.add(normalized);

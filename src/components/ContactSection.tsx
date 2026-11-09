@@ -12,7 +12,7 @@ const defaultValues = {
   website: "",
 };
 
-export function ContactSection() {
+export function ContactSection({ standalone = false }: { standalone?: boolean } = {}) {
   const [submitState, setSubmitState] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [submitMessage, setSubmitMessage] = useState("");
 
@@ -57,8 +57,8 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="border-t bg-surface">
-      <div className="page-shell section-space">
+    <section id="contact" className={standalone ? "" : "border-t bg-surface"}>
+      <div className={standalone ? "page-shell py-8 md:py-12" : "page-shell section-space"}>
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div className="reveal max-w-xl">
             <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-accent-strong">
